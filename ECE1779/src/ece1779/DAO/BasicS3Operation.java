@@ -3,9 +3,6 @@ package ece1779.DAO;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
-
-import javax.servlet.http.HttpServlet;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -15,13 +12,11 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-public class BasicS3Operation extends HttpServlet {
+public class BasicS3Operation {
 
-	public void s3SaveFile(File file, String key, PrintWriter out)
+	public void s3SaveFile(File file, String key,
+			BasicAWSCredentials awsCredentials, PrintWriter out)
 			throws IOException {
-
-		BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
-				.getServletContext().getAttribute("AWSCredentials");
 
 		AmazonS3 s3 = new AmazonS3Client(awsCredentials);
 
