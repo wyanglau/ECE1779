@@ -8,6 +8,52 @@
 		<welcome-file>index.jsp</welcome-file>
 		<welcome-file>login.jsp</welcome-file>
 	</welcome-file-list>
+
+
+	<servlet>
+		<servlet-name>InitializationServlet</servlet-name>
+		<servlet-class>ece1779.servlets.InitializationServlet</servlet-class>
+
+		<!-- Replace with AWS key for your account -->
+		<init-param>
+			<param-name>AWSaccessKey</param-name>
+			<param-value>AKIAJCYDX3Y5VZ5PYYFA</param-value>
+		</init-param>
+
+		<init-param>
+			<param-name>AWSsecretKey</param-name>
+			<param-value>pBQ1AwzLqPhwV6nG2fWtsve46IqdAGj8IBj/h6Io</param-value>
+		</init-param>
+
+		<init-param>
+			<param-name>dbDriver</param-name>
+			<param-value>com.mysql.jdbc.Driver</param-value>
+		</init-param>
+
+		<!-- replace the info bellow with the details for your DB -->
+		<init-param>
+			<param-name>dbURL</param-name>
+			<param-value>jdbc:mysql://ece1779winter2015db.cf2zhhwzx2tf.us-east-1.rds.amazonaws.com</param-value>
+		</init-param>
+
+		<init-param>
+			<param-name>dbUser</param-name>
+			<param-value>group14</param-value>
+		</init-param>
+
+		<init-param>
+			<param-name>dbPassword</param-name>
+			<param-value>8402558225</param-value>
+		</init-param>
+
+
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>InitializationServlet</servlet-name>
+		<url-pattern>/servlets/InitializationServlet</url-pattern>
+	</servlet-mapping>
+
+
 	<servlet>
 		<servlet-name>LogoutServlet</servlet-name>
 		<servlet-class>ece1779.servlets.LogoutServlet</servlet-class>
@@ -16,7 +62,7 @@
 		<servlet-name>LogoutServlet</servlet-name>
 		<url-pattern>/servlets/LogoutServlet</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>LoginServlet</servlet-name>
 		<servlet-class>ece1779.servlets.LoginServlet</servlet-class>

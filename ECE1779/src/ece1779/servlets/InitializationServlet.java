@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
 import ece1779.Main;
@@ -24,7 +27,11 @@ public class InitializationServlet extends HttpServlet {
 		super();
 	}
 
-	public void init() {
+	public void init(ServletConfig config) {
+
+		initAWS(config);
+		initJDBC();
+
 		// to-do get current user
 
 		// This is the test data, you should get user from the session
@@ -40,11 +47,22 @@ public class InitializationServlet extends HttpServlet {
 
 		this.getServletContext().setAttribute(GlobalValues.USER_INIT,
 				new Main(user));
-		
+
 	}
-	
-	private void initAWS(){
-		
+
+	private void initAWS(ServletConfig config) {
+
+		String accessKey = config.getInitParameter("AWSaccessKey");
+		String secretKey = config.getInitParameter("AWSsecretKey");
+		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
+				secretKey);
+
+		config.getServletContext().setAttribute("AWScredentials",
+				awsCredentials);
+	}
+
+	private void initJDBC() {
+
 	}
 
 	/**
