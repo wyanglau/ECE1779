@@ -17,4 +17,17 @@ public class GlobalValues {
 
 	public static final String AWS_CREDENTIALS = "AWScredentials";
 
+	/**
+	 * S3 bucket name
+	 */
+	public static String BUCKET_NAME = "ece1779winter2015group14number1";
+
+	/**
+	 * S3 bucket endpoint, we can access an image key=sample_123456 by
+	 * 
+	 * http://ece1779winter2015group14number1.s3-website-us-west-2.amazonaws.com
+	 * /sample_123456
+	 */
+	public static String BUCKET_ENDPOINT = "http://ece1779winter2015group14number1.s3-website-us-west-2.amazonaws.com/";
+
 }

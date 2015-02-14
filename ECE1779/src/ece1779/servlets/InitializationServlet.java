@@ -32,21 +32,25 @@ public class InitializationServlet extends HttpServlet {
 		initAWS(config);
 		initJDBC();
 
-		// to-do get current user
-
-		// This is the test data, you should get user from the session
-		User user = new User(1, "Ryan", null);
-		List<Images> imgs = new ArrayList<Images>();
-		for (int i = 0; i < 5; i++) {
-			String url = "http://img5.duitang.com/uploads/item/201404/04/20140404170308_aCYQr.jpeg";
-			Images img = new Images(1, url, url, url, url);
-			imgs.add(img);
-		}
-		user.setImgs(imgs);
-		// Test data END
-
-		this.getServletContext().setAttribute(GlobalValues.USER_INIT,
-				new Main(user));
+//		// to-do get current user
+//
+//		// This is the test data, you should get user from the session
+//		User user = new User(1, "Ryan", null);
+//		List<Images> imgs = new ArrayList<Images>();
+//		for (int i = 0; i < 5; i++) {
+//			String url = "https://s3-us-west-2.amazonaws.com/ece1779winter2015group14number1/MyObjectKey_d6310487-f3aa-4c62-81ab-79748b8975fa";
+//			List<String> keys = new ArrayList<String>();
+//			keys.add(url);
+//			keys.add(url);
+//			keys.add(url);
+//			Images img = new Images(1, keys);
+//			imgs.add(img);
+//		}
+//		user.setImgs(imgs);
+//		// Test data END
+//
+//		this.getServletContext().setAttribute(GlobalValues.USER_INIT,
+//				new Main(user));
 
 	}
 

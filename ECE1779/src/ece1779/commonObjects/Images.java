@@ -1,37 +1,19 @@
 package ece1779.commonObjects;
 
+import java.util.List;
+
 public class Images {
 
+	private int userId;
 	private int imgId;
-	private String original;
-	private String transFirst;
-	private String transSecond;
-	private String transThird;
+	private List<String> keys;
 
-	public Images(int imgId, String original, String transFirst,
-			String transSecond, String transThird) {
+	public Images(int userId, int imgId, List<String> keys) {
 
+		this.setUserId(userId);
 		this.imgId = imgId;
-		this.original = original;
-		this.transFirst = transFirst;
-		this.transSecond = transSecond;
-		this.transThird = transThird;
-	}
+		this.keys = keys;
 
-	public String getTransFirst() {
-		return transFirst;
-	}
-
-	public void setTransFirst(String transFirst) {
-		this.transFirst = transFirst;
-	}
-
-	public String getOriginal() {
-		return original;
-	}
-
-	public void setOriginal(String original) {
-		this.original = original;
 	}
 
 	public int getImgId() {
@@ -42,20 +24,20 @@ public class Images {
 		this.imgId = imgId;
 	}
 
-	public String getTransSecond() {
-		return transSecond;
+	public List<String> getKeys() {
+		return keys;
 	}
 
-	public void setTransSecond(String transSecond) {
-		this.transSecond = transSecond;
+	public void setKeys(List<String> keys) {
+		this.keys = keys;
 	}
 
-	public String getTransThird() {
-		return transThird;
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setTransThird(String transThird) {
-		this.transThird = transThird;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 }

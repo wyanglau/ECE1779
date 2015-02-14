@@ -43,10 +43,13 @@ img {
 			for (Images img : user.getImgs()) {
 		%>
 		<tr>
-			<td><img src="<%=img.getOriginal()%>"></td>
-			<td><img src="<%=img.getTransFirst()%>"></td>
-			<td><img src="<%=img.getTransSecond()%>"></td>
-			<td><img src="<%=img.getTransThird()%>"></td>
+			<%
+				for (String key : img.getKeys()) {
+			%>
+			<td><img src="<%=key%>"></td>
+			<%
+				}
+			%>
 		</tr>
 		<%
 			}

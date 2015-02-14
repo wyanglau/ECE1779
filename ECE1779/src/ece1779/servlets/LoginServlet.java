@@ -53,14 +53,15 @@ public class LoginServlet extends HttpServlet {
 			session.setAttribute(GlobalValues.USERNAME, username);
 			session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME);
 
-//			Cookie cookie = new Cookie(GlobalValues.USERNAME, username);
-//			cookie.setMaxAge(30 * 60);
-//
-//			response.addCookie(cookie);
+			// Cookie cookie = new Cookie(GlobalValues.USERNAME, username);
+			// cookie.setMaxAge(30 * 60);
+			//
+			// response.addCookie(cookie);
 
 			this.setCurrentUser(username, session);
 
-			String encodedURL = response.encodeRedirectURL("../pages/display.jsp");
+			String encodedURL = response
+					.encodeRedirectURL("../pages/display.jsp");
 			response.sendRedirect(encodedURL);
 
 		}
@@ -84,13 +85,17 @@ public class LoginServlet extends HttpServlet {
 		User user = new User(1, userName, null);
 		List<Images> imgs = new ArrayList<Images>();
 		for (int i = 0; i < 5; i++) {
-			String url = "http://img5.duitang.com/uploads/item/201404/04/20140404170308_aCYQr.jpeg";
-			Images img = new Images(1, url, url, url, url);
+			String url = "https://s3-us-west-2.amazonaws.com/ece1779winter2015group14number1/MyObjectKey_d6310487-f3aa-4c62-81ab-79748b8975fa";
+			List<String> keys = new ArrayList<String>();
+			keys.add(url);
+			keys.add(url);
+			keys.add(url);
+			Images img = new Images(1, 1, keys);
 			imgs.add(img);
 		}
 		user.setImgs(imgs);
-		/** TEST DATA END**/
-		
+		/** TEST DATA END **/
+
 		session.setAttribute(GlobalValues.USER_INIT, new Main(user));
 	}
 
