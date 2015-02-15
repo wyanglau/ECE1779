@@ -16,5 +16,8 @@
 		PWD : <input type="text" name=<%=GlobalValues.PASSWORD%>><br>
 		<input type="submit" value="Login">
 	</form>
+	<form action = "testtest" method="GET">
+	<input type="submit" value = "test">
+	</form>
 </body>
 </html>
