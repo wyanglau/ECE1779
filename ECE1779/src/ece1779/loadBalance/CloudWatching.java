@@ -22,7 +22,7 @@ import ece1779.commonObjects.CloudWatcher;
 public class CloudWatching {
 
 	@SuppressWarnings("finally")
-	public List<CloudWatcher> getCloudWatchingStatistics(
+	public List<CloudWatcher> getCPUUtilization(
 			BasicAWSCredentials awsCredentials) {
 		List<CloudWatcher> statistics = new ArrayList<CloudWatcher>();
 		AmazonCloudWatch cw = new AmazonCloudWatchClient(awsCredentials);
@@ -87,7 +87,7 @@ public class CloudWatching {
 
 		CloudWatching cloud = new CloudWatching();
 		List<CloudWatcher> result = cloud
-				.getCloudWatchingStatistics(awsCredentials);
+				.getCPUUtilization(awsCredentials);
 
 		for (CloudWatcher w : result) {
 			System.out.println("instance id :" + w.getInstanceId());
