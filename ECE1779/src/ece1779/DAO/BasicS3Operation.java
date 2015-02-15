@@ -53,12 +53,10 @@ public class BasicS3Operation {
 		AmazonS3 s3 = new AmazonS3Client(awsCredentials);
 		String bucketName = GlobalValues.BUCKET_NAME;
 		try {
-
 			if (!s3.doesBucketExist(bucketName)) {
 				s3.createBucket(bucketName);
 				System.out.println("Creating new bucket " + bucketName);
 			}
-
 			s3.putObject(new PutObjectRequest(bucketName, key, file));
 			s3.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
 
@@ -103,23 +101,27 @@ public class BasicS3Operation {
 
 	public static void main(String[] args) {
 
-		String accessKey = "AKIAJCYDX3Y5VZ5PYYFA";
-		String secretKey = "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";
+		String accessKey = "";
+		String secretKey = "/h6Io";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
 		BasicS3Operation s3 = new BasicS3Operation();
-		
-		// // save
+
+		Images image = new Images(0, 1, null);
+		List<File> files = new ArrayList<File>();
+		// save
+		// for (int i = 0; i < 4; i++) {
 		// File file = new File("Sources/doraemon.jpg");
-		// String key = "MyObjectKey_" + UUID.randomUUID();
+		//
+		// files.add(file);
+		// }
 		// try {
-		// s3.save(file, key, awsCredentials, null);
-		// System.out.println("~~~~~?");
+		// s3.save(files, awsCredentials, image);
 		// } catch (IOException e) {
 		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
-		//
+
 		// //delete
 		// s3.deleteALl(awsCredentials);
 		System.out.println("Finished");
