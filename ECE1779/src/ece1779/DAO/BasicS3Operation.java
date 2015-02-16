@@ -21,6 +21,13 @@ import ece1779.commonObjects.Images;
 
 public class BasicS3Operation {
 
+	private AmazonS3 s3;
+
+	public BasicS3Operation(BasicAWSCredentials awsCredentials) {
+		this.s3 = new AmazonS3Client(awsCredentials);
+
+	}
+
 	/**
 	 * 
 	 * Save images to s3 bucket ece1779winter2015group14number1 ,
@@ -30,13 +37,12 @@ public class BasicS3Operation {
 	 * 123_d6310487-f3aa-4c62-81ab-79748b8975fa
 	 * 
 	 */
-	public void save(List<File> files, BasicAWSCredentials awsCredentials,
-			Images image) throws IOException {
+	public void save(List<File> files, Images image) throws IOException {
 
 		List<String> keys = new ArrayList<String>();
 		for (int i = 0; i < files.size(); i++) {
 			String key = image.getImgId() + "_" + UUID.randomUUID();
-			this.save(files.get(i), key, awsCredentials);
+			this.save(files.get(i), key);
 			keys.add(key);
 		}
 		image.setKeys(keys);
@@ -47,18 +53,16 @@ public class BasicS3Operation {
 	 * save specified file if you knew the key of object.
 	 * 
 	 */
-	public void save(File file, String key, BasicAWSCredentials awsCredentials)
-			throws IOException {
+	public void save(File file, String key) throws IOException {
 
-		AmazonS3 s3 = new AmazonS3Client(awsCredentials);
 		String bucketName = GlobalValues.BUCKET_NAME;
 		try {
-			if (!s3.doesBucketExist(bucketName)) {
-				s3.createBucket(bucketName);
+			if (!this.s3.doesBucketExist(bucketName)) {
+				this.s3.createBucket(bucketName);
 				System.out.println("Creating new bucket " + bucketName);
 			}
-			s3.putObject(new PutObjectRequest(bucketName, key, file));
-			s3.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
+			this.s3.putObject(new PutObjectRequest(bucketName, key, file));
+			this.s3.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
 
 		} catch (AmazonServiceException ase) {
 			ase.printStackTrace();
@@ -67,27 +71,26 @@ public class BasicS3Operation {
 		}
 	}
 
-	public void deleteALl(BasicAWSCredentials awsCredentials) {
-		AmazonS3 s3 = new AmazonS3Client(awsCredentials);
+	public void deleteALl() {
 		String bucketName = GlobalValues.BUCKET_NAME;
 		;
 		try {
 
-			ObjectListing objects = s3.listObjects(bucketName);
+			ObjectListing objects = this.s3.listObjects(bucketName);
 
 			List<S3ObjectSummary> summaries = objects.getObjectSummaries();
 			for (S3ObjectSummary item : summaries) {
 				String key = item.getKey();
-				s3.deleteObject(bucketName, key);
+				this.s3.deleteObject(bucketName, key);
 				System.out.println("Delet obj key = " + key);
 			}
 
 			while (objects.isTruncated()) {
-				objects = s3.listNextBatchOfObjects(objects);
+				objects = this.s3.listNextBatchOfObjects(objects);
 				summaries = objects.getObjectSummaries();
 				for (S3ObjectSummary item : summaries) {
 					String key = item.getKey();
-					s3.deleteObject(bucketName, key);
+					this.s3.deleteObject(bucketName, key);
 				}
 			}
 
@@ -105,7 +108,7 @@ public class BasicS3Operation {
 		String secretKey = "/h6Io";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
-		BasicS3Operation s3 = new BasicS3Operation();
+		BasicS3Operation s3 = new BasicS3Operation(awsCredentials);
 
 		Images image = new Images(0, 1, null);
 		List<File> files = new ArrayList<File>();
