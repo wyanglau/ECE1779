@@ -48,19 +48,19 @@
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>ece1779.servlets.LoginServlet</servlet-class>
+    
+    <init-param>
+      <param-name>Manager</param-name>
+      <param-value>admin</param-value>
+    </init-param>
+    
+    <init-param>
+      <param-name>ManagerPassword</param-name>
+      <param-value>123</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>LoginServlet</servlet-name>
     <url-pattern>/servlets/LoginServlet</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <description></description>
-    <display-name>testtest</display-name>
-    <servlet-name>testtest</servlet-name>
-    <servlet-class>ece1779.loadBalance.testtest</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>testtest</servlet-name>
-    <url-pattern>/testtest</url-pattern>
   </servlet-mapping>
 </web-app>
