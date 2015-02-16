@@ -30,4 +30,11 @@ public class GlobalValues {
 	 */
 	public static String BUCKET_ENDPOINT = "http://ece1779winter2015group14number1.s3-website-us-west-2.amazonaws.com/";
 
+	/**
+	 * ECE1779_GROUP14
+	 */
+	public static String SECURITY_GROUP_ID = "sg-36c76d52";
+
+	public static String AMI_ID = "ami-06efba6e";
+
 }

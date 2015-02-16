@@ -3,6 +3,8 @@ package ece1779.loadBalance;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
@@ -20,6 +22,8 @@ import com.amazonaws.services.elasticloadbalancing.model.Listener;
 import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerRequest;
 import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerResult;
 
+import ece1779.GlobalValues;
+
 public class LoadBalancerOperation {
 	private AmazonEC2 ec2;
 	private AmazonElasticLoadBalancing elb;
@@ -33,6 +37,13 @@ public class LoadBalancerOperation {
 
 	}
 
+	public LoadBalancerOperation(AmazonEC2Client ec2,
+			AWSCredentials awsCredentials, String loadBalancerName) {
+		this.ec2 = ec2;
+		elb = new AmazonElasticLoadBalancingClient(awsCredentials);
+		this.loadBalancerName = loadBalancerName;
+	}
+
 	/**
 	 * <b>Default Setting<br>
 	 * </b> Listener: HTTP 80 :8080<br>
@@ -40,12 +51,13 @@ public class LoadBalancerOperation {
 	 * SecurityGroup:sg-36c76d52(ECE1779-GROUP14)<br>
 	 * EableCrossZone: disabled<br>
 	 *
-	 * @return CreateLoadBalancerResult result
+	 * @return CreateLoadBalancerResult result / null if catch exception
 	 */
-	public CreateLoadBalancerResult createLoadBalancer() {
+	public CreateLoadBalancerResult createLoadBalancer()
+			throws AmazonServiceException, AmazonClientException {
+
 		CreateLoadBalancerRequest request = new CreateLoadBalancerRequest(
 				this.loadBalancerName);
-
 		// set availability zone
 		request.withAvailabilityZones("us-east-1a");
 
@@ -55,7 +67,7 @@ public class LoadBalancerOperation {
 		listeners.add(listener);
 		request.setListeners(listeners);
 		// set security group
-		request.withSecurityGroups("sg-36c76d52");
+		request.withSecurityGroups(GlobalValues.SECURITY_GROUP_ID);
 
 		// create load balancer
 		CreateLoadBalancerResult result = elb.createLoadBalancer(request);
@@ -70,9 +82,11 @@ public class LoadBalancerOperation {
 	 * 
 	 * @param ids
 	 *            instances' id
+	 * 
+	 * @return null if catch exception
 	 */
-	public RegisterInstancesWithLoadBalancerResult register(List<String> ids) {
-
+	public RegisterInstancesWithLoadBalancerResult register(List<String> ids)
+			throws AmazonServiceException, AmazonClientException {
 		List<com.amazonaws.services.elasticloadbalancing.model.Instance> instances = new ArrayList<com.amazonaws.services.elasticloadbalancing.model.Instance>();
 
 		for (String id : ids) {
@@ -85,6 +99,7 @@ public class LoadBalancerOperation {
 		System.out.println("Register instances " + ids.toString()
 				+ " from load balancer:" + loadBalancerName);
 		return elb.registerInstancesWithLoadBalancer(request);
+
 	}
 
 	/**
@@ -92,8 +107,10 @@ public class LoadBalancerOperation {
 	 * 
 	 * @param ids
 	 *            instances' id
+	 * @return null if catch exception
 	 */
-	public DeregisterInstancesFromLoadBalancerResult remove(List<String> ids) {
+	public DeregisterInstancesFromLoadBalancerResult remove(List<String> ids)
+			throws AmazonServiceException, AmazonClientException {
 		List<com.amazonaws.services.elasticloadbalancing.model.Instance> instances = new ArrayList<com.amazonaws.services.elasticloadbalancing.model.Instance>();
 
 		for (String id : ids) {
@@ -106,9 +123,16 @@ public class LoadBalancerOperation {
 		System.out.println("Remove instances " + ids.toString()
 				+ " from load balancer:" + loadBalancerName);
 		return elb.deregisterInstancesFromLoadBalancer(request);
+
 	}
 
-	public List<Instance> getAllEC2instances() {
+	/**
+	 * 
+	 * @return null if catch exception
+	 */
+	public List<Instance> getAllEC2instances() throws AmazonServiceException,
+			AmazonClientException {
+
 		DescribeInstancesResult result = ec2.describeInstances();
 		List<Reservation> reservations = result.getReservations();
 		List<Instance> instances = new ArrayList<Instance>();
@@ -116,6 +140,7 @@ public class LoadBalancerOperation {
 			instances.addAll(r.getInstances());
 		}
 		return instances;
+
 	}
 
 	public static void main(String[] args) {
@@ -131,7 +156,7 @@ public class LoadBalancerOperation {
 		for (Instance instance : instances) {
 			ids.add(instance.getInstanceId());
 		}
-
+		System.out.println(ids.toString());
 		// create
 		// lb.createLoadBalancer();
 
