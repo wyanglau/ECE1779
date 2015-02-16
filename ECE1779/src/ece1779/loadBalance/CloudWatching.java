@@ -21,11 +21,16 @@ import ece1779.commonObjects.CloudWatcher;
 
 public class CloudWatching {
 
+	private AmazonCloudWatch cw;
+
+	public CloudWatching(BasicAWSCredentials awsCredentials) {
+		cw = new AmazonCloudWatchClient(awsCredentials);
+	}
+
 	@SuppressWarnings("finally")
-	public List<CloudWatcher> getCPUUtilization(
-			BasicAWSCredentials awsCredentials) {
+	public List<CloudWatcher> getCPUUtilization() {
 		List<CloudWatcher> statistics = new ArrayList<CloudWatcher>();
-		AmazonCloudWatch cw = new AmazonCloudWatchClient(awsCredentials);
+
 		try {
 			ListMetricsRequest listMetricsRequest = new ListMetricsRequest();
 			listMetricsRequest.setMetricName("CPUUtilization");
@@ -81,13 +86,12 @@ public class CloudWatching {
 
 	public static void main(String[] args) {
 		String accessKey = "";
-		String secretKey = "";
+		String secretKey = "+R++";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
 
-		CloudWatching cloud = new CloudWatching();
-		List<CloudWatcher> result = cloud
-				.getCPUUtilization(awsCredentials);
+		CloudWatching cloud = new CloudWatching(awsCredentials);
+		List<CloudWatcher> result = cloud.getCPUUtilization();
 
 		for (CloudWatcher w : result) {
 			System.out.println("instance id :" + w.getInstanceId());
