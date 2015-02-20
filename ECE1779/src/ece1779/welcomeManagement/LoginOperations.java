@@ -41,9 +41,6 @@ public class LoginOperations {
 		return false;
 	}
 	
-	private boolean managerVerification(String name, String password){
-		return false;
-	}
 	
 	/**
 	 *  check 

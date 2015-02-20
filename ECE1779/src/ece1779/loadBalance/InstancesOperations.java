@@ -10,7 +10,9 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.CreateTagsRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
@@ -21,8 +23,6 @@ import com.amazonaws.services.ec2.model.StopInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesResult;
-import com.amazonaws.services.opsworks.model.StartInstanceRequest;
-import com.amazonaws.services.opsworks.model.StopInstanceRequest;
 
 import ece1779.GlobalValues;
 
@@ -99,21 +99,81 @@ public class InstancesOperations {
 		return ec2.startInstances(request);
 	}
 
+	public List<Instance> getAllEC2instances() throws AmazonServiceException,
+			AmazonClientException {
+
+		DescribeInstancesResult result = ec2.describeInstances();
+		List<Reservation> reservations = result.getReservations();
+		List<Instance> instances = new ArrayList<Instance>();
+		for (Reservation r : reservations) {
+			instances.addAll(r.getInstances());
+		}
+
+		return instances;
+
+	}
+
+	/**
+	 * 0 : running instances <br>
+	 * 1 : otherwise
+	 * 
+	 * @param type
+	 * @return
+	 * @throws AmazonServiceException
+	 * @throws AmazonClientException
+	 */
+	public List<Instance> getSpecificInstances(int type)
+			throws AmazonServiceException, AmazonClientException {
+		List<Instance> allInstances = this.getAllEC2instances();
+		List<Instance> result = new ArrayList<Instance>();
+		for (Instance i : allInstances) {
+			InstanceState state = i.getState();
+			if (type == 0
+					&& (state.getCode().equals(0) || state.getCode().equals(16))) {
+				result.add(i);
+			} else if (type == 1
+					&& (state.getCode().equals(64) || state.getCode()
+							.equals(80))) {
+				result.add(i);
+			}
+		}
+		return result;
+
+	}
+
 	public static void main(String[] args) {
 		String accessKey = "";
-		String secretKey = "";
+		String secretKey = "k6";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
 		InstancesOperations op = new InstancesOperations(awsCredentials);
-		
-		//run
-		//		op.runInstances(2);
-		
+
+		// run
+		// op.runInstances(2);
+
 		List<String> ids = new ArrayList<String>();
-		ids.add("i-b87ac942");
-		op.stopInstances(ids);
-		
-		
+		// ids.add("i-b87ac942");
+		// op.stopInstances(ids);
+
+		// // get runnning instances
+		// for (Instance instance : op.getSpecificInstances(0)) {
+		// ids.add(instance.getInstanceId());
+		// }
+		// op.stopInstances(ids);
+
 		System.out.println("Done");
+
+		//
+		// List<Instance> instances = op.getAllEC2instances();
+		// for (Instance instance : instances) {
+		// ids.add(instance.getInstanceId());
+		// }
+		// System.out.println(ids.toString());
+
+		for (Instance instance : op.getSpecificInstances(1)) {
+			ids.add(instance.getInstanceId());
+		}
+		System.out.println(ids.toString());
+
 	}
 }

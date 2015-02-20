@@ -15,7 +15,14 @@ public class GlobalValues {
 	 */
 	public static final int SESSION_INACTIVE_TIME = 30;
 
+	/**
+	 * session attributes
+	 */
 	public static final String AWS_CREDENTIALS = "AWScredentials";
+	/**
+	 * session attributes
+	 */
+	public static final String CLOUD_WATCHING = "CloudWatching";
 
 	/**
 	 * S3 bucket name
@@ -36,5 +43,13 @@ public class GlobalValues {
 	public static String SECURITY_GROUP_ID = "sg-36c76d52";
 
 	public static String AMI_ID = "ami-06efba6e";
+
+	/**
+	 * Privilege Tag
+	 */
+	public static String PRIVILEGE_ADMIN = "1";
+	public static String PRIVILEGE_USER = "0";
+
+	public static String PRIVILEGE_TAG = "PRIVILEGE";
 
 }

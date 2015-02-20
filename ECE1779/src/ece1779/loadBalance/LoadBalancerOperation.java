@@ -6,12 +6,6 @@ import java.util.List;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.ec2.AmazonEC2;
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancing;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.CreateLoadBalancerRequest;
@@ -25,23 +19,14 @@ import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLo
 import ece1779.GlobalValues;
 
 public class LoadBalancerOperation {
-	private AmazonEC2 ec2;
 	private AmazonElasticLoadBalancing elb;
 	private String loadBalancerName;
 
 	public LoadBalancerOperation(AWSCredentials awsCredentials,
 			String loadBalancerName) {
-		ec2 = new AmazonEC2Client(awsCredentials);
 		elb = new AmazonElasticLoadBalancingClient(awsCredentials);
 		this.loadBalancerName = loadBalancerName;
 
-	}
-
-	public LoadBalancerOperation(AmazonEC2Client ec2,
-			AWSCredentials awsCredentials, String loadBalancerName) {
-		this.ec2 = ec2;
-		elb = new AmazonElasticLoadBalancingClient(awsCredentials);
-		this.loadBalancerName = loadBalancerName;
 	}
 
 	/**
@@ -126,37 +111,15 @@ public class LoadBalancerOperation {
 
 	}
 
-	/**
-	 * 
-	 * @return null if catch exception
-	 */
-	public List<Instance> getAllEC2instances() throws AmazonServiceException,
-			AmazonClientException {
-
-		DescribeInstancesResult result = ec2.describeInstances();
-		List<Reservation> reservations = result.getReservations();
-		List<Instance> instances = new ArrayList<Instance>();
-		for (Reservation r : reservations) {
-			instances.addAll(r.getInstances());
-		}
-		return instances;
-
-	}
-
 	public static void main(String[] args) {
-		String accessKey = "";
-		String secretKey = "";
-		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
-				secretKey);
-		LoadBalancerOperation lb = new LoadBalancerOperation(awsCredentials,
-				"group14-lb");
+		// String accessKey = "";
+		// String secretKey = "k65vWG+R++kusP2yXw0WIVujpG8Asf";
+		// BasicAWSCredentials awsCredentials = new
+		// BasicAWSCredentials(accessKey,
+		// secretKey);
+		// LoadBalancerOperation lb = new LoadBalancerOperation(awsCredentials,
+		// "group14-lb");
 
-		List<String> ids = new ArrayList<String>();
-		List<Instance> instances = lb.getAllEC2instances();
-		for (Instance instance : instances) {
-			ids.add(instance.getInstanceId());
-		}
-		System.out.println(ids.toString());
 		// create
 		// lb.createLoadBalancer();
 

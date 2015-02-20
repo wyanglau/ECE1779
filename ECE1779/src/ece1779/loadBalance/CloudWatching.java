@@ -10,20 +10,24 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
+import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.ListMetricsResult;
 import com.amazonaws.services.cloudwatch.model.Metric;
+import com.amazonaws.services.ec2.model.Instance;
 
 import ece1779.commonObjects.CloudWatcher;
 
 public class CloudWatching {
 
 	private AmazonCloudWatch cw;
+	private BasicAWSCredentials awsCredentials;
 
 	public CloudWatching(BasicAWSCredentials awsCredentials) {
+		this.awsCredentials = awsCredentials;
 		cw = new AmazonCloudWatchClient(awsCredentials);
 	}
 
@@ -38,7 +42,11 @@ public class CloudWatching {
 			ListMetricsResult result = cw.listMetrics(listMetricsRequest);
 			List<Metric> metrics = result.getMetrics();
 			for (Metric metric : metrics) {
-				statistics.add(getStatistics(metric, cw));
+				CloudWatcher cloudWatcher = getStatistics(metric, cw);
+				if (cloudWatcher != null) {
+					statistics.add(cloudWatcher);
+				}
+
 			}
 
 		} catch (AmazonServiceException ase) {
@@ -71,22 +79,33 @@ public class CloudWatching {
 		statisticsRequest.setStatistics(statistics);
 		GetMetricStatisticsResult stats = cw
 				.getMetricStatistics(statisticsRequest);
-		System.out.println("Namespace = " + namespace + " Metric = "
-				+ metricName + " Dimensions = " + dimensions);
-		System.out.println("Values = " + stats.toString());
+		System.out.println("[CloudWatching] : Namespace = " + namespace
+				+ " Metric = " + metricName + " Dimensions = " + dimensions);
+		System.out.println("[CloudWatching] Values = " + stats.toString());
 
 		return parseStatistics(dimensions, stats);
 	}
 
 	private CloudWatcher parseStatistics(List<Dimension> dimensions,
 			GetMetricStatisticsResult stats) {
-		return new CloudWatcher(dimensions.get(0).getValue(),
-				stats.getDatapoints());
+		List<Datapoint> datapoints = stats.getDatapoints();
+
+		if (datapoints.size() == 0) {
+			return null;
+		} else {
+			return new CloudWatcher(dimensions.get(0).getValue(), datapoints);
+		}
+	}
+
+	public List<Instance> getAllEC2instances() {
+
+		InstancesOperations op = new InstancesOperations(this.awsCredentials);
+		return op.getAllEC2instances();
 	}
 
 	public static void main(String[] args) {
 		String accessKey = "";
-		String secretKey = "+R++";
+		String secretKey = "";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
 

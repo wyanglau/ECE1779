@@ -1,45 +1,22 @@
 package ece1779.servlets;
 
 import java.io.IOException;
-
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-
-import ece1779.GlobalValues;
-
-public class InitializationServlet extends HttpServlet {
+/**
+ * Servlet implementation class LoadBalance
+ */
+public class ManualScalingServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public InitializationServlet() {
+	public ManualScalingServlet() {
 		super();
-	}
-	
-	public void init(){
-		initAWS(this.getServletConfig());
-		initJDBC();
-	}
-
-
-	private void initAWS(ServletConfig config) {
-
-		String accessKey = config.getInitParameter("AWSaccessKey");
-		String secretKey = config.getInitParameter("AWSsecretKey");
-		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
-				secretKey);
-		config.getServletContext().setAttribute(GlobalValues.AWS_CREDENTIALS,
-				awsCredentials);
-	}
-
-	private void initJDBC() {
-
 	}
 
 	/**
@@ -48,7 +25,6 @@ public class InitializationServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -57,7 +33,8 @@ public class InitializationServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		
+		
 	}
 
 }
