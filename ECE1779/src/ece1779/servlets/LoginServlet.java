@@ -99,6 +99,39 @@ public class LoginServlet extends HttpServlet {
 			response.getWriter().print("Failed to login");
 		}
 
+		/**
+		 * for Harris
+		 */
+		// if(isManager(username,password)){
+		// HttpSession session= request.getSession();
+		// systemSetup();
+		// UserSetup();
+		//
+		//
+		// String encodedURL = response
+		// .encodeRedirectURL("../pages/managerView.jsp");
+		// response.sendRedirect(encodedURL);
+		//
+		// }
+		//
+		// else if(doesUserExists()){
+		// HttpSession session= request.getSession();
+		// systemSetup();
+		// UserSetup();
+		//
+		//
+		// String encodedURL = response
+		// .encodeRedirectURL("../pages/display.jsp");
+		// response.sendRedirect(encodedURL);
+		// }
+		//
+
+	}
+
+	private boolean doesUserExists(String userName, String password) {
+
+		return false;
+
 	}
 
 	private boolean isManager(String username, String password) {
@@ -109,9 +142,18 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
-	private void systemSetup(String privilege, String userName, HttpSession session) {
+	/**
+	 * after checking users
+	 * 
+	 * @param privilege
+	 * @param userName
+	 * @param session
+	 */
+	private void systemSetup(String privilege, String userName,
+			HttpSession session) {
 		// set up user
 		this.setCurrentUser(privilege, userName, session);
+
 		// set up cloudwatching
 		ServletContext context = this.getServletContext();
 		BasicAWSCredentials credentials = (BasicAWSCredentials) context
