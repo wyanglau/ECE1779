@@ -53,51 +53,41 @@ public class BasicS3Operation {
 	 * save specified file if you knew the key of object.
 	 * 
 	 */
-	public void save(File file, String key) throws IOException {
+	public void save(File file, String key) throws IOException,
+			AmazonServiceException, AmazonClientException {
 
 		String bucketName = GlobalValues.BUCKET_NAME;
-		try {
-			if (!this.s3.doesBucketExist(bucketName)) {
-				this.s3.createBucket(bucketName);
-				System.out.println("Creating new bucket " + bucketName);
-			}
-			this.s3.putObject(new PutObjectRequest(bucketName, key, file));
-			this.s3.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
-
-		} catch (AmazonServiceException ase) {
-			ase.printStackTrace();
-		} catch (AmazonClientException ace) {
-			ace.printStackTrace();
+		if (!this.s3.doesBucketExist(bucketName)) {
+			this.s3.createBucket(bucketName);
+			System.out.println("Creating new bucket " + bucketName);
 		}
+		this.s3.putObject(new PutObjectRequest(bucketName, key, file));
+		this.s3.setObjectAcl(bucketName, key,
+				CannedAccessControlList.PublicRead);
+
 	}
 
-	public void deleteALl() {
+	public void deleteALl() throws AmazonServiceException,
+			AmazonClientException {
 		String bucketName = GlobalValues.BUCKET_NAME;
 		;
-		try {
 
-			ObjectListing objects = this.s3.listObjects(bucketName);
+		ObjectListing objects = this.s3.listObjects(bucketName);
 
-			List<S3ObjectSummary> summaries = objects.getObjectSummaries();
+		List<S3ObjectSummary> summaries = objects.getObjectSummaries();
+		for (S3ObjectSummary item : summaries) {
+			String key = item.getKey();
+			this.s3.deleteObject(bucketName, key);
+			System.out.println("Delet obj key = " + key);
+		}
+
+		while (objects.isTruncated()) {
+			objects = this.s3.listNextBatchOfObjects(objects);
+			summaries = objects.getObjectSummaries();
 			for (S3ObjectSummary item : summaries) {
 				String key = item.getKey();
 				this.s3.deleteObject(bucketName, key);
-				System.out.println("Delet obj key = " + key);
 			}
-
-			while (objects.isTruncated()) {
-				objects = this.s3.listNextBatchOfObjects(objects);
-				summaries = objects.getObjectSummaries();
-				for (S3ObjectSummary item : summaries) {
-					String key = item.getKey();
-					this.s3.deleteObject(bucketName, key);
-				}
-			}
-
-		} catch (AmazonServiceException ase) {
-			ase.printStackTrace();
-		} catch (AmazonClientException ace) {
-			ace.printStackTrace();
 		}
 
 	}
