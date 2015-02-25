@@ -58,7 +58,7 @@ public class LoginServlet extends HttpServlet {
 
 		String username = (String) request.getParameter(GlobalValues.USERNAME);
 		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
-		if (isManager(username, pwd)) {
+		/*if (isManager(username, pwd)) {
 			HttpSession session = request.getSession();
 			session.setAttribute(GlobalValues.USERNAME, username);
 			session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME);
@@ -97,7 +97,7 @@ public class LoginServlet extends HttpServlet {
 		else {
 
 			response.getWriter().print("Failed to login");
-		}
+		}*/
 
 		/**
 		 * for Harris

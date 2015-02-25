@@ -5,16 +5,69 @@
 <%@page import="ece1779.GlobalValues"%>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Welcome</title>
+    <style>
+  		table { text-align:center; }
+	</style>
 </head>
 <body>
-	Welcome Page
-	<form action="servlets/LoginServlet" method="POST">
-
-		USER : <input type="text" name=<%=GlobalValues.USERNAME%>><br />
-		PWD : <input type="text" name=<%=GlobalValues.PASSWORD%>><br>
-		<input type="submit" value="Login">
+	<form method="post" action="servlets/LoginServlet">
+		<center>
+			<table border="0" cellpadding="3">
+				<thead>
+					<tr>
+						<th>Login</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><font size=2>Please Register first if this is your
+								first time here</font></td>
+					</tr>
+					<tr>
+						<td><input type="text" name=<%=GlobalValues.USERNAME%>
+							value="" placeholder="username" /></td>
+					</tr>
+					<tr>
+						<td><input type="password" name=<%=GlobalValues.PASSWORD%>
+							value="" placeholder="password" /></td>
+					</tr>
+					<tr>
+						<td align="center"><input type="submit" value="Login" /></td>
+					</tr>
+				</tbody>
+			</table>
+		</center>
+	</form>
+	<br>
+	<form method="post" action="servlets/RegistrationServlet">
+		<center>
+			<table border="0" cellpadding="3">
+				<thead>
+					<tr>
+						<th>Registration</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><input type="text" name=<%=GlobalValues.USERNAME%> value=""
+							placeholder="username" /></td>
+					</tr>
+					<tr>
+						<td><input type="password" name=<%=GlobalValues.PASSWORD%> value=""
+							placeholder="password" /></td>
+					</tr>
+					<tr>
+						<td><input type="password" name=<%=GlobalValues.PASSWORD2%> value=""
+							placeholder="retype password" /></td>
+					</tr>
+					<tr>
+						<td align="center"><input type="submit" value="Register" /></td>
+					</tr>
+				</tbody>
+			</table>
+		</center>
 	</form>
 	<form action = "testtest" method="GET">
 	<input type="submit" value = "test">

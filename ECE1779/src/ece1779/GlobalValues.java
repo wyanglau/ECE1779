@@ -10,6 +10,8 @@ public class GlobalValues {
 
 	public static final String PASSWORD = "password";
 
+	public static final String PASSWORD2 = "password2";
+
 	/**
 	 * Session inactive time = 30
 	 */
