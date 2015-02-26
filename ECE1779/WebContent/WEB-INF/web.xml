@@ -66,6 +66,11 @@
   <servlet>
     <servlet-name>RegistrationServlet</servlet-name>
     <servlet-class>ece1779.servlets.RegistrationServlet</servlet-class>
+    
+    <init-param>
+      <param-name>Manager</param-name>
+      <param-value>admin</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>RegistrationServlet</servlet-name>

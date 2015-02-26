@@ -7,15 +7,23 @@ public class GlobalValues {
 	public static final String USER_INIT = "init";
 
 	public static final String USERNAME = "user";
-
 	public static final String PASSWORD = "password";
 
-	public static final String PASSWORD2 = "password2";
+	public static final String regUSERNAME = "user";
+	public static final String regPASSWORD = "password";
+	public static final String regPASSWORD2 = "password2";
+
+	public static final String dbLocation_URL = "localhost";
+	public static final String dbLocation_Port = "3306";
+	public static final String dbTable_Users = "dbUsers";
+	public static final String dbTable_Images = "dbImages";
+	public static final String dbAdmin_Name = "root";
+	public static final String dbAdmin_Pass = "qwer1234";
 
 	/**
-	 * Session inactive time = 30
+	 * Session inactive time (seconds) = 30 minutes * 60s/min
 	 */
-	public static final int SESSION_INACTIVE_TIME = 30;
+	public static final int SESSION_INACTIVE_TIME = 30 * 60;
 
 	/**
 	 * session attributes

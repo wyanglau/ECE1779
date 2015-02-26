@@ -1,6 +1,7 @@
 package ece1779.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,26 +24,24 @@ import java.sql.*;
 
 public class RegistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-	
-	
-	
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public RegistrationServlet() {
-        super();
-    }
+
+	private String managerName;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public RegistrationServlet() {
+		super();
+	}
 
 	public void init() {
-		
-		
-		
+		// Get manager name and password from web.xml
+		managerName = this.getServletConfig().getInitParameter("Manager");
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse 
-	 * 		response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -50,66 +49,86 @@ public class RegistrationServlet extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse 
-	 * 		response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String user = (String) request.getParameter(GlobalValues.USERNAME);
-		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
-		String pwd2 = (String) request.getParameter(GlobalValues.PASSWORD2);
-		
+		// Get username and the 2 typed passwords from the registration form textfields in
+		// login.jsp
+		String user = (String) request.getParameter(GlobalValues.regUSERNAME);
+		String pwd = (String) request.getParameter(GlobalValues.regPASSWORD);
+		String pwd2 = (String) request.getParameter(GlobalValues.regPASSWORD2);
 
-	    if (user.length() != 0 && pwd.length() != 0 && pwd2.length() != 0)
-	    {
-		    if (pwd.compareTo(pwd2) == 0)
-		    {
-		    	try{
-			    	Class.forName("com.mysql.jdbc.Driver");
-			    	Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbUsers",
-			            "root", "qwer1234");
-			    	Statement st = con.createStatement();
-			    	//ResultSet rs;
-			    	int i = st.executeUpdate("insert into users(login, password) values ('" + user + "','" + pwd + "')");
-			
-			    	if (i > 0) {
-			        	System.out.println("Registration is Successful.");
-			        	//out.println("<br>");
-			        	//out.println("You may now log in.");
-			            //out.println("<br>"); 
-			            //out.println("<a href='index.jsp'>Go to Main page</a>");
-			    	} else {
-			        	response.sendRedirect("login.jsp");
-			    	}
-		    	}
-		    	catch (SQLException e) {
-		            System.out.println("Connection Failed! Check output console");
-		            e.printStackTrace();
-		        }
-		    }
-		    else {
-		        System.out.println("The passwords you entered did not match each other.");
-		        //out.println("<br>");
-		        //out.println("Please try again.");
-		        //out.println("<br>"); 
-		        //out.println("<a href='index.jsp'>Go to Main page</a>");
-		    }
-	    }
-	    else {
-	        System.out.println("The username or password was left empty.");
-	        //out.println("<br>");
-	        //out.println("Please try again.");
-	        //out.println("<br>"); 
-	        //out.println("<a href='index.jsp'>Go to Main page</a>");
-	    }
+		// PrintWriter used to make response messages below
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+
+		// username entered cannot match manager username
+		if (user.compareToIgnoreCase(managerName) != 0) {
+			// username and password entries cannot be empty
+			if (user.length() != 0 && pwd.length() != 0 && pwd2.length() != 0) {
+				// password and repeated password must match
+				if (pwd.compareTo(pwd2) == 0) {
+					try {
+						// Create connection to database
+						Class.forName("com.mysql.jdbc.Driver");
+						Connection con = DriverManager.getConnection(
+								"jdbc:mysql://" + GlobalValues.dbLocation_URL
+										+ ":" + GlobalValues.dbLocation_Port
+										+ "/" + GlobalValues.dbTable_Users,
+								GlobalValues.dbAdmin_Name,
+								GlobalValues.dbAdmin_Pass);
+						Statement st = con.createStatement();
+
+						// Enter data into database
+						int i = st
+								.executeUpdate("insert into users(login, password) values ('"
+										+ user + "','" + pwd + "')");
+
+						// Display success response
+						if (i > 0) {
+							out.println("Registration is Successful.");
+							out.println("<br>");
+							out.println("You may now log in.");
+							out.println("<br>");
+							out.println("<a href='../login.jsp'>Go to Main page</a>");
+						} else {
+							response.sendRedirect("../login.jsp");
+						}
+					} catch (SQLException e) {
+						System.out
+								.println("Connection Failed! Check output console");
+						e.printStackTrace();
+					} catch (ClassNotFoundException e) {
+						System.out
+								.println("Connection Failed! Check output console");
+						e.printStackTrace();
+					}
+				} else {
+					// Password and Password2 did not match, no data entered
+					// into database
+					out.println("The passwords you entered did not match each other.");
+					out.println("<br>");
+					out.println("Please try again.");
+					out.println("<br>");
+					out.println("<a href='../login.jsp'>Go to Main page</a>");
+				}
+			} else {
+				// A field is left empty, no data entered into database
+				out.println("The username or password was left empty.");
+				out.println("<br>");
+				out.println("Please try again.");
+				out.println("<br>");
+				out.println("<a href='../login.jsp'>Go to Main page</a>");
+			}
+		} else {
+			// username entered was manager's username
+			out.println("The username cannot be used");
+			out.println("<br>");
+			out.println("Please try again.");
+			out.println("<br>");
+			out.println("<a href='../login.jsp'>Go to Main page</a>");
+		}
 	}
-
 }
-
-
-
-
-
-
-
-

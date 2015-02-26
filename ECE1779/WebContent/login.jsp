@@ -6,7 +6,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Welcome</title>
+	<title>Welcome to group14 Project!</title>
     <style>
   		table { text-align:center; }
 	</style>
@@ -51,15 +51,15 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td><input type="text" name=<%=GlobalValues.USERNAME%> value=""
+						<td><input type="text" name=<%=GlobalValues.regUSERNAME%> value=""
 							placeholder="username" /></td>
 					</tr>
 					<tr>
-						<td><input type="password" name=<%=GlobalValues.PASSWORD%> value=""
+						<td><input type="password" name=<%=GlobalValues.regPASSWORD%> value=""
 							placeholder="password" /></td>
 					</tr>
 					<tr>
-						<td><input type="password" name=<%=GlobalValues.PASSWORD2%> value=""
+						<td><input type="password" name=<%=GlobalValues.regPASSWORD2%> value=""
 							placeholder="retype password" /></td>
 					</tr>
 					<tr>
@@ -68,9 +68,5 @@
 				</tbody>
 			</table>
 		</center>
-	</form>
-	<form action = "testtest" method="GET">
-	<input type="submit" value = "test">
-	</form>
 </body>
 </html>

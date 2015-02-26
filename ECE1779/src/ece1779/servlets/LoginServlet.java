@@ -1,6 +1,7 @@
 package ece1779.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Cookie;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 
@@ -18,6 +20,8 @@ import ece1779.Main;
 import ece1779.commonObjects.Images;
 import ece1779.commonObjects.User;
 import ece1779.loadBalance.CloudWatching;
+
+import java.sql.*;
 
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -53,87 +57,74 @@ public class LoginServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String testuser = "ryan";
-		String testpwd = "123";
-
-		String username = (String) request.getParameter(GlobalValues.USERNAME);
+		// Get username and password from the login form textfields in
+		// ../login.jsp
+		String user = (String) request.getParameter(GlobalValues.USERNAME);
 		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
-		/*if (isManager(username, pwd)) {
-			HttpSession session = request.getSession();
-			session.setAttribute(GlobalValues.USERNAME, username);
-			session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME);
-			session.setMaxInactiveInterval(30 * 60);
-			// Cookie cookie = new Cookie(GlobalValues.USERNAME, username);
-			// cookie.setMaxAge(30 * 60);
-			//
-			// response.addCookie(cookie);
 
-			this.systemSetup(GlobalValues.PRIVILEGE_ADMIN, username, session);
+		// PrintWriter used to make response messages below
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
 
-			String encodedURL = response
-					.encodeRedirectURL("../pages/managerView.jsp");
-			response.sendRedirect(encodedURL);
+		// Create connection to database
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://"
+					+ GlobalValues.dbLocation_URL + ":"
+					+ GlobalValues.dbLocation_Port + "/"
+					+ GlobalValues.dbTable_Users, GlobalValues.dbAdmin_Name,
+					GlobalValues.dbAdmin_Pass);
+			Statement st = con.createStatement();
+			ResultSet rs;
+			// Retrieve information from database with given login info
+			rs = st.executeQuery("select * from users where login='" + user
+					+ "' and password='" + pwd + "'");
 
+			// check first to see if it is the manager logging in
+			if (isManager(user, pwd)) {
+				HttpSession session = request.getSession();
+				sessionAndCookieSetup(user, request, response, session);
+				// this.systemSetup(GlobalValues.PRIVILEGE_ADMIN, user, session);
+				// UserSetup();
+				String encodedURL = response
+						.encodeRedirectURL("../pages/managerView.jsp");
+				response.sendRedirect(encodedURL);
+			}
+			// check for normal user login
+			else if (userExists(rs)) {
+				HttpSession session = request.getSession();
+				sessionAndCookieSetup(user, request, response, session);
+				// this.systemSetup(GlobalValues.PRIVILEGE_USER, user, session);
+				// UserSetup();
+				String encodedURL = response
+						.encodeRedirectURL("../pages/display.jsp");
+				response.sendRedirect(encodedURL);
+			} 
+			// neither manage nor user information was correctly given
+			else {
+				out.println("Invalid login informatin. <a href='../login.jsp'>Try again</a>.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
 		}
-		if ((testuser.equals(username)) && (testpwd.equals(pwd))) {
-
-			HttpSession session = request.getSession();
-			session.setAttribute(GlobalValues.USERNAME, username);
-			session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME);
-
-			// Cookie cookie = new Cookie(GlobalValues.USERNAME, username);
-			// cookie.setMaxAge(30 * 60);
-			//
-			// response.addCookie(cookie);
-
-			this.systemSetup(GlobalValues.PRIVILEGE_USER, username, session);
-
-			String encodedURL = response
-					.encodeRedirectURL("../pages/display.jsp");
-			response.sendRedirect(encodedURL);
-
+	}
+		
+	// checks if user exists in database
+	private boolean userExists (ResultSet rs) {
+		try {
+			return rs.first();
+		} catch (SQLException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+			return false;
 		}
-
-		else {
-
-			response.getWriter().print("Failed to login");
-		}*/
-
-		/**
-		 * for Harris
-		 */
-		// if(isManager(username,password)){
-		// HttpSession session= request.getSession();
-		// systemSetup();
-		// UserSetup();
-		//
-		//
-		// String encodedURL = response
-		// .encodeRedirectURL("../pages/managerView.jsp");
-		// response.sendRedirect(encodedURL);
-		//
-		// }
-		//
-		// else if(doesUserExists()){
-		// HttpSession session= request.getSession();
-		// systemSetup();
-		// UserSetup();
-		//
-		//
-		// String encodedURL = response
-		// .encodeRedirectURL("../pages/display.jsp");
-		// response.sendRedirect(encodedURL);
-		// }
-		//
-
 	}
 
-	private boolean doesUserExists(String userName, String password) {
-
-		return false;
-
-	}
-
+	// checks if login information corresponds to manager
 	private boolean isManager(String username, String password) {
 		if (username.equals(managerName) && password.equals(managerPassword)) {
 			return true;
@@ -143,7 +134,24 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	/**
-	 * after checking users
+	 * after checking users, set session and cookie
+	 * 
+	 * @param user - username
+	 * @param request - servlet request
+	 * @param response - servlet response 
+	 * @param session - current servlet session
+	 */
+	private void sessionAndCookieSetup(String user, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		session.setAttribute(GlobalValues.USERNAME, user);
+		session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME );
+		Cookie cookie = new Cookie(GlobalValues.USERNAME, user);
+		cookie.setMaxAge(GlobalValues.SESSION_INACTIVE_TIME);
+		response.addCookie(cookie);
+	}
+	
+	/**
+	 * setup the AWS system
 	 * 
 	 * @param privilege
 	 * @param userName
