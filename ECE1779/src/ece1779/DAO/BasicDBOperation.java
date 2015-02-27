@@ -16,21 +16,20 @@ public class BasicDBOperation {
 	/**
 	 * userid and keys are contained in Images object.
 	 */
-	public void addImg(Images image) {
+	public void add(Images image) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void deleteUser(User user) {
+	public void delete(User user) {
 
 	}
 
-	// only for manager view
-	public void deleteAll(List<Images> image) {
+	public void delete(List<Images> image) {
 
 	}
 
-	public void deleteImg(Images image) {
+	public void delete(Images image) {
 		// TODO Auto-generated method stub
 
 	}
