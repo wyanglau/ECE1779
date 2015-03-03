@@ -81,20 +81,37 @@ public class RegistrationServlet extends HttpServlet {
 								GlobalValues.dbAdmin_Pass);
 						Statement st = con.createStatement();
 
-						// Enter data into database
-						int i = st
-								.executeUpdate("insert into users(login, password) values ('"
-										+ user + "','" + pwd + "')");
-
-						// Display success response
-						if (i > 0) {
-							out.println("Registration is Successful.");
+						// Retrieve information from database with given username
+						ResultSet rs;
+						rs = st.executeQuery("select * from users where login='" + user
+								+ "'");
+						
+						// if username already exists, registration fails
+						if (!userNameTaken (rs))
+						{
+							// Enter data into database
+							int i = st
+									.executeUpdate("insert into users(login, password) values ('"
+											+ user + "','" + pwd + "')");
+	
+							// Display success response
+							if (i > 0) {
+								out.println("Registration is Successful.");
+								out.println("<br>");
+								out.println("You may now log in.");
+								out.println("<br>");
+								out.println("<a href='../login.jsp'>Go to Main page</a>");
+							} else {
+								response.sendRedirect("../login.jsp");
+							}
+						} else {
+							// Username already exists, no data entered
+							// into database
+							out.println("The username you entered already exists.");
 							out.println("<br>");
-							out.println("You may now log in.");
+							out.println("Please try again.");
 							out.println("<br>");
 							out.println("<a href='../login.jsp'>Go to Main page</a>");
-						} else {
-							response.sendRedirect("../login.jsp");
 						}
 					} catch (SQLException e) {
 						System.out
@@ -129,6 +146,17 @@ public class RegistrationServlet extends HttpServlet {
 			out.println("Please try again.");
 			out.println("<br>");
 			out.println("<a href='../login.jsp'>Go to Main page</a>");
+		}
+	}
+	
+	// checks if username already exists in database
+	private boolean userNameTaken (ResultSet rs) {
+		try {
+			return rs.first();
+		} catch (SQLException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+			return false;
 		}
 	}
 }
