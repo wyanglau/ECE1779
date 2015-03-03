@@ -6,8 +6,6 @@ public class GlobalValues {
 	 */
 	public static final String USER_INIT = "init";
 
-	public static final int USERID = -2;
-	
 	public static final String USERNAME = "user";
 	public static final String PASSWORD = "password";
 
