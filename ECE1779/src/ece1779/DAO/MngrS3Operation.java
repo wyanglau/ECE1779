@@ -28,46 +28,7 @@ public class MngrS3Operation {
 
 	}
 
-	/**
-	 * 
-	 * Save images to s3 bucket ece1779winter2015group14number1 ,
-	 * 
-	 * the format of key is imageId_UUID, e.g.
-	 * 
-	 * 123_d6310487-f3aa-4c62-81ab-79748b8975fa
-	 * 
-	 */
-	public void save(List<File> files, Images image) throws IOException {
-
-		List<String> keys = new ArrayList<String>();
-		for (int i = 0; i < files.size(); i++) {
-			String key = image.getImgId() + "_" + UUID.randomUUID();
-			this.save(files.get(i), key);
-			keys.add(key);
-		}
-		image.setKeys(keys);
-	}
-
-	/**
-	 * 
-	 * save specified file if you knew the key of object.
-	 * 
-	 */
-	public void save(File file, String key) throws IOException,
-			AmazonServiceException, AmazonClientException {
-
-		String bucketName = GlobalValues.BUCKET_NAME;
-		if (!this.s3.doesBucketExist(bucketName)) {
-			this.s3.createBucket(bucketName);
-			System.out.println("Creating new bucket " + bucketName);
-		}
-		this.s3.putObject(new PutObjectRequest(bucketName, key, file));
-		this.s3.setObjectAcl(bucketName, key,
-				CannedAccessControlList.PublicRead);
-
-	}
-
-	public void deleteAll() throws AmazonServiceException,
+	public void deleteAllS3() throws AmazonServiceException,
 			AmazonClientException {
 		String bucketName = GlobalValues.BUCKET_NAME;
 		;

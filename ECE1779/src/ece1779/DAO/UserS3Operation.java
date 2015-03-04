@@ -67,31 +67,6 @@ public class UserS3Operation {
 
 	}
 
-	public void deleteAll() throws AmazonServiceException,
-			AmazonClientException {
-		String bucketName = GlobalValues.BUCKET_NAME;
-		;
-
-		ObjectListing objects = this.s3.listObjects(bucketName);
-
-		List<S3ObjectSummary> summaries = objects.getObjectSummaries();
-		for (S3ObjectSummary item : summaries) {
-			String key = item.getKey();
-			this.s3.deleteObject(bucketName, key);
-			System.out.println("Delet obj key = " + key);
-		}
-
-		while (objects.isTruncated()) {
-			objects = this.s3.listNextBatchOfObjects(objects);
-			summaries = objects.getObjectSummaries();
-			for (S3ObjectSummary item : summaries) {
-				String key = item.getKey();
-				this.s3.deleteObject(bucketName, key);
-			}
-		}
-
-	}
-
 	public static void main(String[] args) {
 
 		String accessKey = "";

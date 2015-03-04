@@ -239,6 +239,7 @@ public class LoginServlet extends HttpServlet {
 	 */
 	private int getUserID(ResultSet rs) {
 		try {
+			// get user id from id column of database
 			return rs.getInt("id");
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");

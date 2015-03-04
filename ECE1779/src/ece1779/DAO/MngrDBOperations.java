@@ -6,20 +6,19 @@ import java.util.List;
 import ece1779.commonObjects.Images;
 import ece1779.commonObjects.User;
 
-public class MngrDbOperations {
+public class MngrDBOperations {
 
 	private User user;
 
-	public MngrDbOperations(User user) {
+	public MngrDBOperations(User user) {
 		this.user = user;
 	}
 
 	
-	public void deleteAll() {
+	public void deleteAllDB() {
 
 		/**
-		 * 1. clean up S3
-		 * 2. clean up MySQL
+		 * 1. clean up MySQL
 		 */
 	}
 }

@@ -3,7 +3,7 @@ package ece1779.userOperations;
 
 import java.io.File;
 
-import ece1779.DAO.UserDbOperations;
+import ece1779.DAO.UserDBOperations;
 import ece1779.commonObjects.User;
 
 public class UserOperations {
@@ -19,7 +19,7 @@ public class UserOperations {
 	 */
 	public void load() {
 
-		UserDbOperations db = new UserDbOperations(this.currentUser);
+		UserDBOperations db = new UserDBOperations(this.currentUser);
 		this.currentUser.setImgs(db.findImgs());
 
 	}
