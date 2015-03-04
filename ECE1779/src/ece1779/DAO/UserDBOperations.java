@@ -26,18 +26,20 @@ public class UserDBOperations {
 	 * search for images belongs to this.user from sql
 	 */
 	public List<Images> findImgs() {
+	    Connection con = null;
+	    Statement st = null;
+	    ResultSet rs = null;
 		try {
 			// Create connection to database
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://"
+			con = DriverManager.getConnection("jdbc:mysql://"
 					+ GlobalValues.dbLocation_URL + ":"
 					+ GlobalValues.dbLocation_Port + "/"
 					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
 					GlobalValues.dbAdmin_Pass);
-			Statement st = con.createStatement();
+			st = con.createStatement();
 
 			// retrieve list of all image sets belonging to current user
-			ResultSet rs;
 			rs = st.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userid='" + user.getId()
 					+ "'");
 			// create an array of img sets
@@ -66,7 +68,11 @@ public class UserDBOperations {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return null;
-		}
+		} finally {
+	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	    }
 	}
 
 	/**
@@ -75,18 +81,20 @@ public class UserDBOperations {
 	 * @return int
 	 */
 	public int findUserId() {
+	    Connection con = null;
+	    Statement st = null;
+	    ResultSet rs = null;
 		try {
 			// Create connection to database
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://"
+			con = DriverManager.getConnection("jdbc:mysql://"
 					+ GlobalValues.dbLocation_URL + ":"
 					+ GlobalValues.dbLocation_Port + "/"
 					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
 					GlobalValues.dbAdmin_Pass);
-			Statement st = con.createStatement();
+			st = con.createStatement();
 
 			// Retrieve information from database with given username and password
-			ResultSet rs;
 			rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + GlobalValues.USERNAME
 					+ "' and password='" + GlobalValues.PASSWORD + "'");
 
@@ -101,7 +109,11 @@ public class UserDBOperations {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return -2;
-		}
+		} finally {
+	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	    }
 	}
 
 	public void addImages(List<File> imgs) {
