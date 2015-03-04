@@ -29,7 +29,9 @@ public class LoginServlet extends HttpServlet {
 	private String managerName;
 	private String managerPassword;
 	private int userID;
+	private Connection con;
 	private Statement st;
+	private ResultSet rs;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -71,7 +73,7 @@ public class LoginServlet extends HttpServlet {
 		// Create connection to database
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://"
+			con = DriverManager.getConnection("jdbc:mysql://"
 					+ GlobalValues.dbLocation_URL + ":"
 					+ GlobalValues.dbLocation_Port + "/"
 					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
@@ -79,7 +81,6 @@ public class LoginServlet extends HttpServlet {
 			st = con.createStatement();
 
 			// Retrieve information from database with given username and password
-			ResultSet rs;
 			rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user
 					+ "' and password='" + pwd + "'");
 
@@ -106,7 +107,7 @@ public class LoginServlet extends HttpServlet {
 			} 
 			// neither manage nor user information was correctly given
 			else {
-				out.println("Invalid login informatin. <a href='../login.jsp'>Try again</a>.");
+				out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
 			}
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
@@ -114,7 +115,11 @@ public class LoginServlet extends HttpServlet {
 		} catch (ClassNotFoundException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
-		}
+		} finally {
+	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	    }
 	}
 		
 	// checks if user exists in database
@@ -196,7 +201,6 @@ public class LoginServlet extends HttpServlet {
 			if (userID >= 0)
 			{
 				// retrieve list of all image sets belonging to current user
-				ResultSet rs;
 				rs = st.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userid='" + userID
 						+ "'");
 				// create an array of img sets
