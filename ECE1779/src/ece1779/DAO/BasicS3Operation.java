@@ -67,7 +67,7 @@ public class BasicS3Operation {
 
 	}
 
-	public void deleteALl() throws AmazonServiceException,
+	public void deleteAll() throws AmazonServiceException,
 			AmazonClientException {
 		String bucketName = GlobalValues.BUCKET_NAME;
 		;
@@ -116,7 +116,7 @@ public class BasicS3Operation {
 		// }
 
 		// //delete
-		// s3.deleteALl(awsCredentials);
+		// s3.deleteAll(awsCredentials);
 		System.out.println("Finished");
 	}
 

@@ -76,14 +76,14 @@ public class RegistrationServlet extends HttpServlet {
 						Connection con = DriverManager.getConnection(
 								"jdbc:mysql://" + GlobalValues.dbLocation_URL
 										+ ":" + GlobalValues.dbLocation_Port
-										+ "/" + GlobalValues.dbTable_Users,
+										+ "/" + GlobalValues.dbLocation_Schema,
 								GlobalValues.dbAdmin_Name,
 								GlobalValues.dbAdmin_Pass);
 						Statement st = con.createStatement();
 
 						// Retrieve information from database with given username
 						ResultSet rs;
-						rs = st.executeQuery("select * from users where login='" + user
+						rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user
 								+ "'");
 						
 						// if username already exists, registration fails

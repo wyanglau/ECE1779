@@ -6,7 +6,7 @@ import java.util.List;
 import ece1779.commonObjects.Images;
 import ece1779.commonObjects.User;
 
-public class UserDbOperations extends BasicDBOperation {
+public class UserDbOperations {
 
 	private User user;
 
@@ -32,29 +32,6 @@ public class UserDbOperations extends BasicDBOperation {
 		return 1;
 	}
 
-	public void deleteAll() {
-
-		/**
-		 * 1. clean up S3
-		 * 2. clean up MySQL
-		 */
-	}
-
-
-
-	public void addUser() {
-
-	}
-
-	public void editUser() {
-
-	}
-
-	/**
-	 * Add new images to S3
-	 * 
-	 * @param image
-	 */
 	public void addImages(List<File> imgs) {
 
 		/**

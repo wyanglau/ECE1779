@@ -13,10 +13,14 @@ public class GlobalValues {
 	public static final String regPASSWORD = "password";
 	public static final String regPASSWORD2 = "password2";
 
+	/**
+	 * SQL Database information
+	 */
 	public static final String dbLocation_URL = "localhost";
 	public static final String dbLocation_Port = "3306";
-	public static final String dbTable_Users = "dbUsers";
-	public static final String dbTable_Images = "dbImages";
+	public static final String dbLocation_Schema = "dbUsers";
+	public static final String dbTable_Users = "users";
+	public static final String dbTable_Images = "images";
 	public static final String dbAdmin_Name = "root";
 	public static final String dbAdmin_Pass = "qwer1234";
 
