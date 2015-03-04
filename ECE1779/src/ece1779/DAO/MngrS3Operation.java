@@ -19,11 +19,11 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import ece1779.GlobalValues;
 import ece1779.commonObjects.Images;
 
-public class BasicS3Operation {
+public class MngrS3Operation {
 
 	private AmazonS3 s3;
 
-	public BasicS3Operation(BasicAWSCredentials awsCredentials) {
+	public MngrS3Operation(BasicAWSCredentials awsCredentials) {
 		this.s3 = new AmazonS3Client(awsCredentials);
 
 	}
@@ -98,7 +98,7 @@ public class BasicS3Operation {
 		String secretKey = "/h6Io";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
-		BasicS3Operation s3 = new BasicS3Operation(awsCredentials);
+		MngrS3Operation s3 = new MngrS3Operation(awsCredentials);
 
 		Images image = new Images(0, 1, null);
 		List<File> files = new ArrayList<File>();
