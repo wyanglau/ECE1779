@@ -13,6 +13,25 @@
 <title>Manager View</title>
 </head>
 <body>
+	<script type="text/javascript">
+		function manualGrow() {
+			document.display.action = "../ManualGrowServlet";
+			document.display.submit();
+		}
+		function manualShrink() {
+			document.display.action = "../ManualShrinkServlet";
+			document.display.submit();
+		}
+
+		function startAutoScaling() {
+			document.display.action = "../StartAutoScadulingServlet";
+			document.display.submit();
+		}
+		function stopAutoScaling() {
+			document.display.action = "../StopAutoScadulingServlet";
+			document.display.submit();
+		}
+	</script>
 
 	<div align=center>
 		<h1>Manager View</h1>
@@ -62,60 +81,54 @@
 		<tr></tr>
 		<tr></tr>
 	</table>
-	<table align=center>
-		<tr>
-			<td><h3>
-					<u>Manual Scaling</u>
-				</h3></td>
-		</tr>
-		<tr>
-			<td>Shrinking Ratio:</td>
-			<td><input type=text value=2></td>
-			<td><input type=submit value=shrink></td>
-		</tr>
-		<tr>
-			<td>Growing Ratio:</td>
-			<td><input type=text value=2></td>
-			<td><input type=submit value=grow></td>
-		</tr>
+	<form name=display action="" method=POST>
+		<table align=center>
+			<tr>
+				<td><h3>
+						<u>Manual Scaling</u>
+					</h3></td>
+			</tr>
+			<tr>
 
-		<tr>
-			<td><h3>
-					<u>Auto Scaling Configuration</u>
-				</h3></td>
-		</tr>
+				<td>Shrinking Ratio:</td>
+				<td><input type=text value=2 name=manualShrinkRatio></td>
+				<td><input type=button value=shrink onclick="manualShrink()"></td>
+			</tr>
+			<tr>
+				<td>Growing Ratio:</td>
+				<td><input type=text value=2 name=manualGrowRatio></td>
+				<td><input type=button value=grow onclick="manualGrow()"></td>
+			</tr>
 
-		<tr>
-			<td>CPU Utilization Threshold:</td>
-		</tr>
-		<tr>
-			<td>Growing Threshold: <input type=text value=80>(%)
-			</td>
-			<td>Ratio: <input type=text value=2></td>
-		</tr>
-		<tr>
-			<td>Shrinking Threshold: <input type=text value=30>(%)
-			</td>
-			<td>Ratio: <input type=text value=2></td>
-		</tr>
+			<tr>
+				<td><h3>
+						<u>Auto Scaling Configuration</u>
+					</h3></td>
+			</tr>
 
-	</table>
-	<table align=center>
-		<tr>
-			<td><input type=submit value=confirm></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td><input type="reset" value=reset></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td><input type="submit" value=stop></td>
-		</tr>
-	</table>
+			<tr>
+				<td>CPU Utilization Threshold:</td>
+			</tr>
+			<tr>
+				<td>Growing Threshold: <input type=text value=80
+					name=expandThreshlod>(%)
+				</td>
+				<td>Ratio: <input type=text value=2 name=growRatio></td>
+			</tr>
+			<tr>
+				<td>Shrinking Threshold: <input type=text value=30
+					name=shrinkThreshlod>(%)
+				</td>
+				<td>Ratio: <input type=text value=2 name=shrinkRatio></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><input type=button value=start onclick="startAutoScaling()">
+					<input type="button" value=stop onclick="stopAutoScaling()"></td>
+			</tr>
 
+		</table>
+	</form>
 
 
 </body>

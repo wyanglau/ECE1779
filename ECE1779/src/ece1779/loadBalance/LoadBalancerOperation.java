@@ -56,8 +56,8 @@ public class LoadBalancerOperation {
 
 		// create load balancer
 		CreateLoadBalancerResult result = elb.createLoadBalancer(request);
-		System.out.println("Created Load Balancer " + this.loadBalancerName
-				+ ".");
+		System.out.println("[LoadBalancerOperation] Created Load Balancer "
+				+ this.loadBalancerName + ".");
 		return result;
 
 	}
@@ -81,8 +81,8 @@ public class LoadBalancerOperation {
 		}
 		RegisterInstancesWithLoadBalancerRequest request = new RegisterInstancesWithLoadBalancerRequest(
 				loadBalancerName, instances);
-		System.out.println("Register instances " + ids.toString()
-				+ " from load balancer:" + loadBalancerName);
+		System.out.println("[LoadBalancerOperation] Register instances "
+				+ ids.toString() + " from load balancer:" + loadBalancerName);
 		return elb.registerInstancesWithLoadBalancer(request);
 
 	}
@@ -105,8 +105,8 @@ public class LoadBalancerOperation {
 		}
 		DeregisterInstancesFromLoadBalancerRequest request = new DeregisterInstancesFromLoadBalancerRequest(
 				loadBalancerName, instances);
-		System.out.println("Remove instances " + ids.toString()
-				+ " from load balancer:" + loadBalancerName);
+		System.out.println("[LoadBalancerOperation] Remove instances "
+				+ ids.toString() + " from load balancer:" + loadBalancerName);
 		return elb.deregisterInstancesFromLoadBalancer(request);
 
 	}

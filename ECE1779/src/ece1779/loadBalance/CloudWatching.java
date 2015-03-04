@@ -31,34 +31,28 @@ public class CloudWatching {
 		cw = new AmazonCloudWatchClient(awsCredentials);
 	}
 
-	@SuppressWarnings("finally")
-	public List<CloudWatcher> getCPUUtilization() {
+	public List<CloudWatcher> getCPUUtilization()
+			throws AmazonServiceException, AmazonClientException {
 		List<CloudWatcher> statistics = new ArrayList<CloudWatcher>();
 
-		try {
-			ListMetricsRequest listMetricsRequest = new ListMetricsRequest();
-			listMetricsRequest.setMetricName("CPUUtilization");
-			listMetricsRequest.setNamespace("AWS/EC2");
-			ListMetricsResult result = cw.listMetrics(listMetricsRequest);
-			List<Metric> metrics = result.getMetrics();
-			for (Metric metric : metrics) {
-				CloudWatcher cloudWatcher = getStatistics(metric, cw);
-				if (cloudWatcher != null) {
-					statistics.add(cloudWatcher);
-				}
-
+		ListMetricsRequest listMetricsRequest = new ListMetricsRequest();
+		listMetricsRequest.setMetricName("CPUUtilization");
+		listMetricsRequest.setNamespace("AWS/EC2");
+		ListMetricsResult result = cw.listMetrics(listMetricsRequest);
+		List<Metric> metrics = result.getMetrics();
+		for (Metric metric : metrics) {
+			CloudWatcher cloudWatcher = getStatistics(metric, cw);
+			if (cloudWatcher != null) {
+				statistics.add(cloudWatcher);
 			}
 
-		} catch (AmazonServiceException ase) {
-			ase.printStackTrace();
-		} catch (AmazonClientException ace) {
-			ace.printStackTrace();
-		} finally {
-			return statistics;
 		}
+
+		return statistics;
 	}
 
-	private CloudWatcher getStatistics(Metric metric, AmazonCloudWatch cw) {
+	private CloudWatcher getStatistics(Metric metric, AmazonCloudWatch cw)
+			throws AmazonServiceException, AmazonClientException {
 
 		String namespace = metric.getNamespace();
 		String metricName = metric.getMetricName();
@@ -87,7 +81,8 @@ public class CloudWatching {
 	}
 
 	private CloudWatcher parseStatistics(List<Dimension> dimensions,
-			GetMetricStatisticsResult stats) {
+			GetMetricStatisticsResult stats) throws AmazonServiceException,
+			AmazonClientException {
 		List<Datapoint> datapoints = stats.getDatapoints();
 
 		if (datapoints.size() == 0) {
@@ -97,7 +92,8 @@ public class CloudWatching {
 		}
 	}
 
-	public List<Instance> getAllEC2instances() {
+	public List<Instance> getAllEC2instances() throws AmazonServiceException,
+			AmazonClientException {
 
 		InstancesOperations op = new InstancesOperations(this.awsCredentials);
 		return op.getAllEC2instances();

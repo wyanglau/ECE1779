@@ -6,18 +6,22 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+
+import ece1779.GlobalValues;
+import ece1779.loadBalance.WorkerPoolManagement;
 
 /**
- * Servlet implementation class LogoutServlet
+ * Servlet implementation class ManualShrinkServlet
  */
-public class LogoutServlet extends HttpServlet {
+public class ManualShrinkServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public LogoutServlet() {
+	public ManualShrinkServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -37,23 +41,30 @@ public class LogoutServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-//		Cookie[] cookies = request.getCookies();
-//		if (cookies != null) {
-//			for (Cookie cookie : cookies) {
-//				if (cookie.getName().equals("JSESSIONID")) {
-//					System.out.println("JSESSIONID=" + cookie.getValue());
-//				}
-//				cookie.setMaxAge(0);
-//				response.addCookie(cookie);
-//			}
-//		}
-		// invalidate the session if exists
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
+		try {
+
+			System.out.println("Shrinking Worker Pool");
+			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
+					.getServletContext().getAttribute(
+							GlobalValues.AWS_CREDENTIALS);
+			int ratio = Integer.parseInt((String) request
+					.getParameter("manualShrinkRatio"));
+
+			if (ratio == 0) {
+				System.out.println("Invalid Ratio Parameter");
+				return;
+			}
+			WorkerPoolManagement wpm = new WorkerPoolManagement(awsCredentials);
+			wpm.shrinking(ratio);
+
+		} catch (Exception e) {
+			// to do
+			e.printStackTrace();
 		}
-		// no encoding because we have invalidated the session
-		response.sendRedirect("../login.jsp");
+
+	}
+
+	public static void main(String[] args) {
 
 	}
 

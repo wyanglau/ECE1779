@@ -59,6 +59,11 @@ public class GlobalValues {
 	public static String AMI_ID = "ami-06efba6e";
 
 	/**
+	 * loadbalancer name
+	 * 
+	 */
+	public static String LOADBALANCER_NAME = "group14-lb";
+	/**
 	 * Privilege Tag
 	 */
 	public static String PRIVILEGE_ADMIN = "1";

@@ -39,6 +39,7 @@ public class InstancesOperations {
 	}
 
 	/**
+	 * To run quantity of new instances
 	 * 
 	 * @param quantity
 	 */
@@ -61,6 +62,8 @@ public class InstancesOperations {
 			ids.add(instance.getInstanceId());
 		}
 		addTag(tag, ids);
+		System.out.println("[InstancesOperations] Running new instances :"
+				+ ids.toString());
 		return result;
 
 	}
@@ -90,12 +93,16 @@ public class InstancesOperations {
 	public StopInstancesResult stopInstances(List<String> ids)
 			throws AmazonServiceException, AmazonClientException {
 		StopInstancesRequest request = new StopInstancesRequest(ids);
+		System.out.println("[InstancesOperations] Stopping  instances :"
+				+ ids.toString());
 		return ec2.stopInstances(request);
 	}
 
 	public StartInstancesResult startInstances(List<String> ids)
 			throws AmazonServiceException, AmazonClientException {
 		StartInstancesRequest request = new StartInstancesRequest(ids);
+		System.out.println("[InstancesOperations] Starting  instances :"
+				+ ids.toString());
 		return ec2.startInstances(request);
 	}
 
@@ -122,6 +129,8 @@ public class InstancesOperations {
 	 * @throws AmazonServiceException
 	 * @throws AmazonClientException
 	 */
+	// to do : there's a bug here, when the instances are under terminated/
+	// stopping / shutting down, they won't be start up
 	public List<Instance> getSpecificInstances(int type)
 			throws AmazonServiceException, AmazonClientException {
 		List<Instance> allInstances = this.getAllEC2instances();
@@ -142,8 +151,8 @@ public class InstancesOperations {
 	}
 
 	public static void main(String[] args) {
-		String accessKey = "";
-		String secretKey = "k6";
+		String accessKey = "=";
+		String secretKey = "+R+iPFsZHajU7+";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
 		InstancesOperations op = new InstancesOperations(awsCredentials);
