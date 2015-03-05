@@ -18,6 +18,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
 import ece1779.commonObjects.User;
+import ece1779.userOperations.ImageProcessing;
 import ece1779.userOperations.UserOperations;
 
 /**
@@ -50,7 +51,6 @@ public class FileUploadServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		System.out.println("im in");
 		try {
 			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
 					.getServletContext().getAttribute(
@@ -86,15 +86,19 @@ public class FileUploadServlet extends HttpServlet {
 			// get root directory of web application
 			String path = this.getServletContext().getRealPath("/");
 
-			String newFileName = path + UUID.randomUUID();
+			String newFilePath = path + UUID.randomUUID();
 
 			// store file in server
-			File fileToBeStored = new File(newFileName);
-
+			File fileToBeStored = new File(newFilePath);
 			theFile.write(fileToBeStored);
 
+			// --- tstdata
+			ImageProcessing ip = new ImageProcessing();
+			ip.transform(fileToBeStored);
+			// ---
+
 			UserOperations uo = new UserOperations(user, awsCredentials);
-			uo.uploadAndSave(fileToBeStored);
+			// uo.uploadAndSave(fileToBeStored);
 
 			// /**
 			// * testdata

@@ -25,10 +25,12 @@ public class CloudWatching {
 
 	private AmazonCloudWatch cw;
 	private BasicAWSCredentials awsCredentials;
+	private InstancesOperations op;
 
 	public CloudWatching(BasicAWSCredentials awsCredentials) {
 		this.awsCredentials = awsCredentials;
 		cw = new AmazonCloudWatchClient(awsCredentials);
+		op = new InstancesOperations(this.awsCredentials);
 	}
 
 	public List<CloudWatcher> getCPUUtilization()
@@ -84,8 +86,10 @@ public class CloudWatching {
 			GetMetricStatisticsResult stats) throws AmazonServiceException,
 			AmazonClientException {
 		List<Datapoint> datapoints = stats.getDatapoints();
-
-		if (datapoints.size() == 0) {
+		String currentId = dimensions.get(0).getValue();
+		List<String> runningInstanceIds = this.getRunningInstanceIDs();
+		System.out.println("~~~~" + runningInstanceIds.toString());
+		if (!runningInstanceIds.contains(currentId)) {
 			return null;
 		} else {
 			return new CloudWatcher(dimensions.get(0).getValue(), datapoints);
@@ -95,8 +99,17 @@ public class CloudWatching {
 	public List<Instance> getAllEC2instances() throws AmazonServiceException,
 			AmazonClientException {
 
-		InstancesOperations op = new InstancesOperations(this.awsCredentials);
 		return op.getAllEC2instances();
+	}
+
+	private List<String> getRunningInstanceIDs() throws AmazonServiceException,
+			AmazonClientException {
+
+		List<String> ids = new ArrayList<String>();
+		for (Instance i : op.getSpecificInstances(0)) {
+			ids.add(i.getInstanceId());
+		}
+		return ids;
 	}
 
 	public static void main(String[] args) {

@@ -11,7 +11,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Manager View</title>
+<style type="text/css">
+.divSur {
+	border-style: solid;
+}
+</style>
 </head>
+
 <body>
 	<script type="text/javascript">
 		function manualGrow() {

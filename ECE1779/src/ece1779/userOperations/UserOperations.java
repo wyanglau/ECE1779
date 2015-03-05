@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.im4java.core.IM4JavaException;
+
 import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.DAO.UserDBOperations;
@@ -36,8 +38,11 @@ public class UserOperations {
 	 * 
 	 * @param user
 	 * @throws IOException
+	 * @throws IM4JavaException
+	 * @throws InterruptedException
 	 */
-	public Images uploadAndSave(File image) throws IOException {
+	public Images uploadAndSave(File image) throws IOException,
+			InterruptedException, IM4JavaException {
 
 		ImageProcessing ip = new ImageProcessing();
 		List<File> images = ip.transform(image);
