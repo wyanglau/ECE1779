@@ -12,19 +12,20 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import ece1779.GlobalValues;
 import ece1779.commonObjects.Images;
+import ece1779.commonObjects.User;
 
 public class UserS3Operations {
 
 	private AmazonS3 s3;
+	private User user;
 
-	public UserS3Operations(BasicAWSCredentials awsCredentials) {
+	public UserS3Operations(BasicAWSCredentials awsCredentials, User user) {
 		this.s3 = new AmazonS3Client(awsCredentials);
+		this.user = user;
 
 	}
 
@@ -32,7 +33,7 @@ public class UserS3Operations {
 	 * 
 	 * Save images to s3 bucket ece1779winter2015group14number1 ,
 	 * 
-	 * the format of key is imageId_UUID, e.g.
+	 * the format of key is userId_UUID, e.g.
 	 * 
 	 * 123_d6310487-f3aa-4c62-81ab-79748b8975fa
 	 * 
@@ -41,7 +42,7 @@ public class UserS3Operations {
 
 		List<String> keys = new ArrayList<String>();
 		for (int i = 0; i < files.size(); i++) {
-			String key = image.getImgId() + "_" + UUID.randomUUID();
+			String key = user.getId() + "_" + UUID.randomUUID();
 			this.save(files.get(i), key);
 			keys.add(key);
 		}
@@ -73,7 +74,8 @@ public class UserS3Operations {
 		String secretKey = "/h6Io";
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
 				secretKey);
-		UserS3Operations s3 = new UserS3Operations(awsCredentials);
+		UserS3Operations s3 = new UserS3Operations(awsCredentials, new User(1,
+				null, null));
 
 		Images image = new Images(0, 1, null);
 		List<File> files = new ArrayList<File>();

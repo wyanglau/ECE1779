@@ -5,6 +5,8 @@
 <%@page import="ece1779.commonObjects.Images"%>
 <%@page import="ece1779.Main"%>
 <%@page import="ece1779.GlobalValues"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -111,8 +113,11 @@ img {
 	</script>
 
 	<%
-		Main init = (Main) session.getAttribute(GlobalValues.USER_INIT);
-		User user = init.getUser();
+		//Main init = (Main) session.getAttribute(GlobalValues.USER_INIT);
+		//User user = init.getUser();
+
+		//test data
+		User user = new User(1, "ryan", new ArrayList<Images>());
 	%>
 	<form
 		action=<%=response.encodeURL(request.getContextPath()
@@ -127,14 +132,14 @@ img {
 	<br>
 	<form
 		action=<%=response.encodeURL(request.getContextPath())
-					+ "/FileUpload"%>
+					+ "/FileUploadServlet"%>
 		enctype="multipart/form-data" method="post">
 		<div align=center>
 			<div class=divDash>
-				<br> Upload a new image?<br><br> <input type=hidden
+				<br> Upload a new image?<br> <br> <input type=hidden
 					name="userID">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
-					type="file" name="theFile" /> <br><br> <input class=submitButton
-					type=submit> <br> <br>
+					type="file" name="theFile" /> <br> <br> <input
+					class=submitButton type=submit> <br> <br>
 			</div>
 		</div>
 	</form>

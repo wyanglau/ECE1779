@@ -116,13 +116,12 @@ public class UserDBOperations {
 	    }
 	}
 
-	public void addImages(List<File> imgs) {
+	public void addImages(Images imageObj) {
 
+		
 		/**
-		 *  1. 存到S3， 得到链接（key）
-		 *  2. 把KEY存到MYSQL中相应的表里
-		 *  3. 新建commonObjects.Images对象，依次把4张图片的链接初始化到Images对象中，再添加到当前this.user里
-		 *  
+		 * 1. insert the keys in imageObj to the specified userId. 
+		 * 2. set the key of this image to the input imageObj
 		 */
 	}
 

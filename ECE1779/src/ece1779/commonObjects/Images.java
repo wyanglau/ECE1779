@@ -8,6 +8,13 @@ public class Images {
 	private int imgId;
 	private List<String> keys;
 
+	/**
+	 * if you don't have a imgId or userId, set -1;
+	 * 
+	 * @param userId
+	 * @param imgId
+	 * @param keys
+	 */
 	public Images(int userId, int imgId, List<String> keys) {
 
 		this.setUserId(userId);
