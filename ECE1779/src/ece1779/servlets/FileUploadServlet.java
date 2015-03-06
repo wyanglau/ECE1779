@@ -56,6 +56,7 @@ public class FileUploadServlet extends HttpServlet {
 					.getServletContext().getAttribute(
 							GlobalValues.AWS_CREDENTIALS);
 
+			/** Harris: GlobalValues.USERNAME is a String of Username, not User object! */
 			User user = (User) request.getSession().getAttribute(
 					GlobalValues.USERNAME);
 			// Create a factory for disk-based file items
