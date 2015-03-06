@@ -69,12 +69,14 @@ public class UserDBOperations {
 			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user.getUserName()
 					+ "'");
 			
+			// Username Exists
 			if (rs.first()) {
 				// get user id from id column of database
 				return rs.getInt("id");
 			}
+			// Username Doesn't Exist
 			else {
-				return -2;
+				return -1;
 			}
 			
 		} finally {
@@ -94,10 +96,12 @@ public class UserDBOperations {
 			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user.getUserName()
 					+ "'");
 			
+			// Username Exists
 			if (rs.first()) {
 				// get user pw from password column of database
 				return rs.getString("password");
 			}
+			// Username Doesn't Exist
 			else {
 				return null;
 			}
@@ -116,8 +120,24 @@ public class UserDBOperations {
 		 */
 	}
 		
-	public void addUser () {
-		
+	public void addUser (String password) {
+		ResultSet rs = null;
+		try {
+			// Retrieve information from database with given username and password
+			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user.getUserName()
+					+ "'");
+			
+			if (rs.first()) {
+				// get user id from id column of database
+				return rs.getInt("id");
+			}
+			else {
+				return -1;
+			}
+			
+		} finally {
+	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
+	    }
 	}
 
 }

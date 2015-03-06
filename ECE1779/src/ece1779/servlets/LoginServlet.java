@@ -65,7 +65,7 @@ public class LoginServlet extends HttpServlet {
 		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
 		
 		// Setup user object
-		User currentUser = new User(-2, user, null);
+		User currentUser = new User(-1, user, null);
 
 		// PrintWriter used to make response messages below
 		response.setContentType("text/html");
@@ -78,8 +78,8 @@ public class LoginServlet extends HttpServlet {
 			if (isManager(user, pwd)) {
 				HttpSession session = request.getSession();
 				sessionAndCookieSetup(user, request, response, session);
-				//Manager does not have a user id in data base, set to -1
-				currentUser.setId(-1);
+				//Manager does not have a user id in data base, set to -2
+				currentUser.setId(-2);
 				this.systemSetup(session);
 				this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser, session);
 				String encodedURL = response
@@ -215,7 +215,7 @@ public class LoginServlet extends HttpServlet {
 		
 		// Load image set of the current user
 		try {
-			// manager has userID -1, and does not have an image set
+			// manager has userID -2, and does not have an image set
 			// do not try to retrieve image set if manager is logged in
 			if (user.getId() >= 0)
 			{
