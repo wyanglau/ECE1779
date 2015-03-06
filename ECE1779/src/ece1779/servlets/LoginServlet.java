@@ -228,7 +228,7 @@ public class LoginServlet extends HttpServlet {
 			session.setAttribute(GlobalValues.PRIVILEGE_TAG, privilege);
 			
 			// test output -> give all keys of current img set
-			System.out.println(user.getImgs().get(0).getKeys().get(1));
+			// System.out.println(user.getImgs().get(0).getKeys().get(1));
 			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
