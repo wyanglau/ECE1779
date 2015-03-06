@@ -26,9 +26,9 @@ public class UserDBOperations {
 	}
 
 	/**
-	 * search for images belongs to this.user from sql
+	 * search for all images belongs to this.user from sql
 	 */
-	public List<Images> findImgs() throws SQLException {
+	public List<Images> findAllImgs() throws SQLException {
 	    ResultSet rs = null;
 		try {
 			// retrieve list of all image sets belonging to current user
@@ -112,36 +112,55 @@ public class UserDBOperations {
 	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
 	    }
 	}
-		
+	
+	/**
+	 * add user to MySQL
+	 * 
+	 * @return boolean
+	 * boolean = 1 if success, 0 if fail
+	 */
 	public boolean addUser (String pwd) throws SQLException {
+		// Enter data into database
+		int i = statement.executeUpdate("insert into " + GlobalValues.dbTable_Users + "(login, password) values ('"+ user.getUserName() + "','" + pwd + "')");
+
+		// Successful write to SQL database
+		if (i > 0) {
+			return true;
+		}
+		//Write failed
+		else {
+			return false;
+		}
+	}
+	
+	/**
+	 * add image to MySQL
+	 * 
+	 * @return int
+	 * int = image id from SQL database
+	 */
+	public int addImage(Images imageObj) throws SQLException {
 		ResultSet rs = null;
 		try {
 			// Enter data into database
-			// int i = 1 if successful
-			// int i = 0 if fail
-			int i = statement.executeUpdate("insert into users(login, password) values ('"+ user.getUserName() + "','" + pwd + "')");
+			statement.executeUpdate("insert into " + GlobalValues.dbTable_Images + "(userid, key1, key2, key3, key4) values ('"+ user.getId() + "','" + imageObj.getKeys().get(0) + "','" + imageObj.getKeys().get(1) + "','" + imageObj.getKeys().get(2) + "','" + imageObj.getKeys().get(3) + "')");
 			
-			// Successful write to SQL database
-			if (i > 0) {
-				return true;
+			// Retrieve image from SQL after adding it
+			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Images + " where key1='" + imageObj.getKeys().get(0) + "'");
+			
+			// return the image id
+			if (rs.first()) {
+				// get image id from id column of database
+				return rs.getInt("id");
 			}
-			//Write failed
+			// Image didn't save into database somehow
 			else {
-				return false;
+				return -1;
 			}
 			
 		} finally {
 	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
 	    }
-	}
-
-	public void addImages(Images imageObj) {
-
-		
-		/**
-		 * 1. insert the keys in imageObj to the specified userId. 
-		 * 2. set the key of this image to the input imageObj
-		 */
 	}
 
 }

@@ -220,7 +220,7 @@ public class LoginServlet extends HttpServlet {
 			if (user.getId() >= 0)
 			{
 				//set user's img set to the above
-				user.setImgs(udbo.findImgs());
+				user.setImgs(udbo.findAllImgs());
 			}
 
 			// set user attributes for both Users and Admin
@@ -228,7 +228,7 @@ public class LoginServlet extends HttpServlet {
 			session.setAttribute(GlobalValues.PRIVILEGE_TAG, privilege);
 			
 			// test output -> give all keys of current img set
-			//System.out.println(user.getImgs().get(1).getKeys());
+			System.out.println(user.getImgs().get(0).getKeys().get(1));
 			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");

@@ -53,9 +53,9 @@ public class UserOperations {
 		UserS3Operations s3 = new UserS3Operations(credentials, user);
 		s3.save(images, imgObj);
 
-		// update database
-		UserDBOperations db = new UserDBOperations(user);
-		db.addImages(imgObj);
+		// update database, retrieve image ID from database and return the imgObj
+		UserDBOperations db = new UserDBOperations(user, st);
+		imgObj.setImgId(db.addImage(imgObj));
 		return imgObj;
 
 	}
