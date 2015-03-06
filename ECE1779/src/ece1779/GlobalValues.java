@@ -71,4 +71,6 @@ public class GlobalValues {
 
 	public static String PRIVILEGE_TAG = "PRIVILEGE";
 
+	public static String SPECIFIC_IMAGE = "SPECIFIC_IMAGE";
+
 }

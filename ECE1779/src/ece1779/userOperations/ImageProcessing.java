@@ -31,27 +31,11 @@ public class ImageProcessing {
 			InterruptedException, IM4JavaException {
 		System.out.println(file.getAbsolutePath());
 		List<File> images = new ArrayList<File>();
-
-		images.add(flip(file));
+		images.add(flop(file));
 		images.add(monochrome(file));
 		images.add(negate(file));
-		images.add(flop(file));
+
 		return images;
-
-	}
-
-	private File flip(File file) throws IOException, InterruptedException,
-			IM4JavaException {
-		IMOperation op = new IMOperation();
-		op.addImage();
-		op.flip();
-		op.addImage();
-
-		ConvertCmd cmd = new ConvertCmd(false);
-		String resultedPath = file.getParent() + "/" + UUID.randomUUID();
-		cmd.run(op, file.getCanonicalPath(), resultedPath);
-
-		return new File(resultedPath);
 
 	}
 

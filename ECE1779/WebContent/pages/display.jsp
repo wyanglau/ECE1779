@@ -53,6 +53,10 @@ img {
 	align: center;
 }
 
+.divDashImageBorder {
+	border: 1px solid #000;
+}
+
 .exitButton {
 	background-color: #44c767;
 	-moz-border-radius: 4px;
@@ -118,6 +122,32 @@ img {
 
 		//test data
 		User user = new User(1, "ryan", new ArrayList<Images>());
+		List<String> keys = new ArrayList<String>();
+		keys.add("1001_0de77df0-1ae3-415d-919c-5c1ce17131b2");
+		keys.add("de8b9ea0-d770-4da3-afba-f13be11fbbad");
+		keys.add("2a59ed43-8c90-4dee-bd98-ed7f9fae2801");
+		keys.add("f4f99a54-4f89-4191-8ba9-c936dc359d2d");
+
+		List<String> key2 = new ArrayList<String>();
+		key2.add("560_350_cat.gif");
+		key2.add("560_350_cat.gif");
+		key2.add("560_350_cat.gif");
+		key2.add("560_350_cat.gif");
+		Images imgobj = new Images(user.getId(), 1, key2);
+		Images imgobj2 = new Images(user.getId(), 2, keys);
+		Images imgobj3 = new Images(user.getId(), 3, key2);
+		Images imgobj4 = new Images(user.getId(), 4, keys);
+		Images imgobj5 = new Images(user.getId(), 5, key2);
+		Images imgobj6 = new Images(user.getId(), 6, keys);
+		Images imgobj7 = new Images(user.getId(), 7, key2);
+		user.addImage(imgobj);
+		user.addImage(imgobj2);
+		user.addImage(imgobj3);
+		user.addImage(imgobj4);
+		user.addImage(imgobj5);
+		user.addImage(imgobj6);
+		user.addImage(imgobj7);
+		//test data
 	%>
 	<form
 		action=<%=response.encodeURL(request.getContextPath()
@@ -146,13 +176,21 @@ img {
 	<br />
 	<table>
 		<%
-			for (Images img : user.getImgs()) {
+			List<Images> images = user.getImgs();
+			for (int i = 0; i < images.size(); i += 4) {
 		%>
 		<tr>
 			<%
-				for (String key : img.getKeys()) {
+				for (int j = i; (j < i + 4) && (j < images.size()); j++) {
+						List<String> imagekeys = images.get(j).getKeys();
+						String key = imagekeys.get(0);
+						String href = "imageDetail.jsp?key1=" + key + "&key2="
+								+ imagekeys.get(1) + "&key3=" + imagekeys.get(2)
+								+ "&key4=" + imagekeys.get(3);
 			%>
-			<td><img src="<%=key%>"></td>
+			<td align=center><a href=<%=href%>><img
+					src="<%=GlobalValues.BUCKET_ENDPOINT + key%>" width=auto
+					onclick="setImage()"></a></td>
 			<%
 				}
 			%>
