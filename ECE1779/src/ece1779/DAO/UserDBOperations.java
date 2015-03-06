@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,30 +18,21 @@ import java.sql.*;
 public class UserDBOperations {
 
 	private User user;
+	private Statement statement;
 
-	public UserDBOperations(User user) {
+	public UserDBOperations(User user, Statement st) {
 		this.user = user;
+		this.statement = st;
 	}
 
 	/**
 	 * search for images belongs to this.user from sql
 	 */
-	public List<Images> findImgs() {
-	    Connection con = null;
-	    Statement st = null;
+	public List<Images> findImgs() throws SQLException {
 	    ResultSet rs = null;
 		try {
-			// Create connection to database
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://"
-					+ GlobalValues.dbLocation_URL + ":"
-					+ GlobalValues.dbLocation_Port + "/"
-					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
-					GlobalValues.dbAdmin_Pass);
-			st = con.createStatement();
-
 			// retrieve list of all image sets belonging to current user
-			rs = st.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userid='" + user.getId()
+			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userid='" + user.getId()
 					+ "'");
 			// create an array of img sets
 			List<Images> imgSet = new ArrayList<Images>();
@@ -60,18 +52,8 @@ public class UserDBOperations {
 
 			return imgSet;
 		
-		} catch (SQLException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-			return null;
-		} catch (ClassNotFoundException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-			return null;
 		} finally {
 	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
 	    }
 	}
 
@@ -80,39 +62,48 @@ public class UserDBOperations {
 	 * 
 	 * @return int
 	 */
-	public int findUserId() {
-	    Connection con = null;
-	    Statement st = null;
+	public int findUserID () throws SQLException {
 	    ResultSet rs = null;
 		try {
-			// Create connection to database
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://"
-					+ GlobalValues.dbLocation_URL + ":"
-					+ GlobalValues.dbLocation_Port + "/"
-					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
-					GlobalValues.dbAdmin_Pass);
-			st = con.createStatement();
-
 			// Retrieve information from database with given username and password
-			rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + GlobalValues.USERNAME
-					+ "' and password='" + GlobalValues.PASSWORD + "'");
-
-			// get user id from id column of database
-			return rs.getInt("id");
+			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user.getUserName()
+					+ "'");
 			
-		} catch (SQLException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-			return -2;
-		} catch (ClassNotFoundException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-			return -2;
+			if (rs.first()) {
+				// get user id from id column of database
+				return rs.getInt("id");
+			}
+			else {
+				return -2;
+			}
+			
 		} finally {
 	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	    }
+	}
+
+	/**
+	 * search for user password from MySQL
+	 * 
+	 * @return String
+	 */
+	public String findUserPW () throws SQLException {
+	    ResultSet rs = null;
+		try {
+			// Retrieve information from database with given username and password
+			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user.getUserName()
+					+ "'");
+			
+			if (rs.first()) {
+				// get user pw from password column of database
+				return rs.getString("password");
+			}
+			else {
+				return null;
+			}
+			
+		} finally {
+	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
 	    }
 	}
 
@@ -123,6 +114,10 @@ public class UserDBOperations {
 		 * 1. insert the keys in imageObj to the specified userId. 
 		 * 2. set the key of this image to the input imageObj
 		 */
+	}
+		
+	public void addUser () {
+		
 	}
 
 }

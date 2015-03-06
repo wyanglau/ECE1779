@@ -26,7 +26,6 @@ public class RegistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private String managerName;
-	private Connection con;
 	private Statement st;
 	private ResultSet rs;
 
@@ -75,14 +74,7 @@ public class RegistrationServlet extends HttpServlet {
 				if (pwd.compareTo(pwd2) == 0) {
 					try {
 						// Create connection to database
-						Class.forName("com.mysql.jdbc.Driver");
-						con = DriverManager.getConnection(
-								"jdbc:mysql://" + GlobalValues.dbLocation_URL
-										+ ":" + GlobalValues.dbLocation_Port
-										+ "/" + GlobalValues.dbLocation_Schema,
-								GlobalValues.dbAdmin_Name,
-								GlobalValues.dbAdmin_Pass);
-						st = con.createStatement();
+						st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
 
 						// Retrieve information from database with given username
 						rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user
@@ -119,14 +111,8 @@ public class RegistrationServlet extends HttpServlet {
 						System.out
 								.println("Connection Failed! Check output console");
 						e.printStackTrace();
-					} catch (ClassNotFoundException e) {
-						System.out
-								.println("Connection Failed! Check output console");
-						e.printStackTrace();
 					} finally {
 				        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
-				        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
-				        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
 				    }
 				} else {
 					// Password and Password2 did not match, no data entered

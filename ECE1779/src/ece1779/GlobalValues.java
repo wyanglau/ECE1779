@@ -13,6 +13,11 @@ public class GlobalValues {
 	public static final String regPASSWORD = "password";
 	public static final String regPASSWORD2 = "password2";
 
+	/**	
+     * SQL Connection Statement Tag			
+     */			
+	public static final String ConnectionStatement_Tag = "default";			
+	        
 	/**
 	 * SQL Database information
 	 */

@@ -1,6 +1,8 @@
 package ece1779.servlets;
 
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
+
+import java.sql.*;
 
 public class InitializationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -39,7 +43,24 @@ public class InitializationServlet extends HttpServlet {
 	}
 
 	private void initJDBC() {
-
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://"
+					+ GlobalValues.dbLocation_URL + ":"
+					+ GlobalValues.dbLocation_Port + "/"
+					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
+					GlobalValues.dbAdmin_Pass);
+			Statement st = con.createStatement();
+			
+			this.getServletContext().setAttribute(GlobalValues.ConnectionStatement_Tag, st);
+			
+		} catch (SQLException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
 	}
 
 	/**

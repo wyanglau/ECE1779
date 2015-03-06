@@ -20,6 +20,7 @@ import ece1779.Main;
 import ece1779.commonObjects.Images;
 import ece1779.commonObjects.User;
 import ece1779.loadBalance.CloudWatching;
+import ece1779.DAO.*;
 
 import java.sql.*;
 
@@ -28,10 +29,8 @@ public class LoginServlet extends HttpServlet {
 
 	private String managerName;
 	private String managerPassword;
-	private int userID;
-	private Connection con;
+
 	private Statement st;
-	private ResultSet rs;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -52,7 +51,6 @@ public class LoginServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -65,67 +63,90 @@ public class LoginServlet extends HttpServlet {
 		// ../login.jsp
 		String user = (String) request.getParameter(GlobalValues.USERNAME);
 		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
+		
+		// Setup user object
+		User currentUser = new User(-2, user, null);
 
 		// PrintWriter used to make response messages below
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 
-		// Create connection to database
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://"
-					+ GlobalValues.dbLocation_URL + ":"
-					+ GlobalValues.dbLocation_Port + "/"
-					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
-					GlobalValues.dbAdmin_Pass);
-			st = con.createStatement();
-
-			// Retrieve information from database with given username and password
-			rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user
-					+ "' and password='" + pwd + "'");
-
+		// if password entered was blank, don't check anything; it was wrong
+		if (pwd.length() > 0)
+		{
 			// check first to see if it is the manager logging in
 			if (isManager(user, pwd)) {
 				HttpSession session = request.getSession();
 				sessionAndCookieSetup(user, request, response, session);
 				//Manager does not have a user id in data base, set to -1
-				userID = -1;
-				this.systemSetup(GlobalValues.PRIVILEGE_ADMIN, user, userID, session);
+				currentUser.setId(-1);
+				this.systemSetup(session);
+				this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser, session);
 				String encodedURL = response
 						.encodeRedirectURL("../pages/managerView.jsp");
 				response.sendRedirect(encodedURL);
 			}
-			// check for normal user login
-			else if (userExists(rs)) {
-				HttpSession session = request.getSession();
-				sessionAndCookieSetup(user, request, response, session);
-				userID = getUserID (rs);
-				this.systemSetup(GlobalValues.PRIVILEGE_USER, user, userID, session);
-				String encodedURL = response
-						.encodeRedirectURL("../pages/display.jsp");
-				response.sendRedirect(encodedURL);
+			// check for normal user login, whether username exists
+			else if (userExists(currentUser)) {
+				// check for normal user login, whether password matches
+				if (userPasswordMatches(currentUser,pwd)) {
+					HttpSession session = request.getSession();
+					sessionAndCookieSetup(user, request, response, session);
+					this.systemSetup(session);
+					this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser, session);
+					String encodedURL = response
+							.encodeRedirectURL("../pages/display.jsp");
+					response.sendRedirect(encodedURL);
+				}
+				else {
+					// password entered was wrong
+					out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
+				}
 			} 
 			// neither manage nor user information was correctly given
 			else {
 				out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
 			}
-		} catch (SQLException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-		} finally {
-	        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
-	    }
+		} 
+		// password entered was blank
+		else {
+			out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
+		}
 	}
 		
 	// checks if user exists in database
-	private boolean userExists (ResultSet rs) {
+	private boolean userExists (User currentUser) {
+		// Call statement to database
+		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
+		UserDBOperations udbo = new UserDBOperations( currentUser, st);
+		
 		try {
-			return rs.first();
+			int tempInt = udbo.findUserID();
+			if (tempInt >= 0)
+			{
+				currentUser.setId(tempInt);
+				return true;
+			}
+			else
+			{
+				return false;
+			}			
+		} catch (SQLException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	// checks if entered info matches user password in database
+	private boolean userPasswordMatches (User currentUser, String password) {
+		// Call statement to database
+		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
+		UserDBOperations udbo = new UserDBOperations( currentUser, st);
+		
+		try {
+			return (udbo.findUserPW().compareTo(password) == 0 ? true : false);
+			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
@@ -167,11 +188,7 @@ public class LoginServlet extends HttpServlet {
 	 * @param userID
 	 * @param session
 	 */
-	private void systemSetup(String privilege, String userName, int userID,
-			HttpSession session) {
-		// set up user
-		this.setCurrentUser(privilege, userName, userID, session);
-
+	private void systemSetup(HttpSession session) {
 		// set up cloudwatching
 		ServletContext context = this.getServletContext();
 		BasicAWSCredentials credentials = (BasicAWSCredentials) context
@@ -190,37 +207,20 @@ public class LoginServlet extends HttpServlet {
 	 * @param session
 	 * 
 	 */
-	private void setCurrentUser(String privilege, String userName, int userID,
-			HttpSession session) {
+	private void setCurrentUser(String privilege, User user, HttpSession session) {
 
-		User user = new User(userID, userName, null);
-
+		// Call statement to database
+		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
+		UserDBOperations udbo = new UserDBOperations( user, st);
+		
+		// Load image set of the current user
 		try {
 			// manager has userID -1, and does not have an image set
 			// do not try to retrieve image set if manager is logged in
-			if (userID >= 0)
+			if (user.getId() >= 0)
 			{
-				// retrieve list of all image sets belonging to current user
-				rs = st.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userid='" + userID
-						+ "'");
-				// create an array of img sets
-				List<Images> imgSet = new ArrayList<Images>();
-
-				// fill img set with all resultset results
-				while (rs.next()) {
-					// create new array of img URLs in the img set
-					List<String> keys = new ArrayList<String>();
-					keys.add(rs.getString("key1"));
-					keys.add(rs.getString("key2"));
-					keys.add(rs.getString("key3"));
-					keys.add(rs.getString("key4"));
-					// create an instance of imageset -> Images
-					Images img = new Images(userID, rs.getInt("id"), keys);
-					imgSet.add(img);
-				}
-
 				//set user's img set to the above
-				user.setImgs(imgSet);
+				user.setImgs(udbo.findImgs());
 			}
 
 			// set user attributes for both Users and Admin
@@ -228,28 +228,12 @@ public class LoginServlet extends HttpServlet {
 			session.setAttribute(GlobalValues.PRIVILEGE_TAG, privilege);
 			
 			// test output -> give all keys of current img set
-			//System.out.println(user.getImgs().get(0).getKeys());
+			//System.out.println(user.getImgs().get(1).getKeys());
 			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 		}	
-	}
-	
-	/**
-	 * get userid from database, given login name and resultset found from it
-	 * 
-	 * @param rs
-	 */
-	private int getUserID(ResultSet rs) {
-		try {
-			// get user id from id column of database
-			return rs.getInt("id");
-		} catch (SQLException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-			return -2;
-		}
 	}
 
 }
