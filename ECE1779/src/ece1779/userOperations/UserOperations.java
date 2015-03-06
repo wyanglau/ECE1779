@@ -28,8 +28,8 @@ public class UserOperations {
 	 */
 	public void load() {
 
-		UserDBOperations db = new UserDBOperations(this.user);
-		this.user.setImgs(db.findImgs());
+		UserDBOperations db = new UserDBOperations(this.user, statement);
+		this.user.setImgs(db.findAllImgs());
 
 	}
 
@@ -54,7 +54,8 @@ public class UserOperations {
 		s3.save(images, imgObj);
 
 		// update database, retrieve image ID from database and return the imgObj
-		UserDBOperations db = new UserDBOperations(user, st);
+		// note: addImage returns int imageID from SQL right after image has been added
+		UserDBOperations db = new UserDBOperations(user, statement);
 		imgObj.setImgId(db.addImage(imgObj));
 		return imgObj;
 
