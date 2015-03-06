@@ -16,6 +16,9 @@ import ece1779.GlobalValues;
 
 import java.sql.*;
 
+import org.apache.commons.dbcp.cpdsadapter.*;
+import org.apache.commons.dbcp.datasources.*;
+
 public class InitializationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -43,23 +46,33 @@ public class InitializationServlet extends HttpServlet {
 	}
 
 	private void initJDBC() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://"
+		try {  
+		    //Initialize connection pool    
+
+		    getServletContext().log("SQLGatewayPool: Connecting to DB");
+
+			   
+		    DriverAdapterCPDS ds = new DriverAdapterCPDS();
+		    ds.setDriver("com.mysql.jdbc.Driver");
+		    ds.setUrl("jdbc:mysql://"
 					+ GlobalValues.dbLocation_URL + ":"
 					+ GlobalValues.dbLocation_Port + "/"
-					+ GlobalValues.dbLocation_Schema, GlobalValues.dbAdmin_Name,
-					GlobalValues.dbAdmin_Pass);
-			Statement st = con.createStatement();
+					+ GlobalValues.dbLocation_Schema);
+		    
+		    ds.setUser(GlobalValues.dbAdmin_Name);
+		    ds.setPassword(GlobalValues.dbAdmin_Pass);
+
+		    SharedPoolDataSource dbcp = new SharedPoolDataSource();
+		    dbcp.setConnectionPoolDataSource(ds);
+		    
+		    Connection con = dbcp.getConnection();
+	
+		    Statement st = con.createStatement();
 			
 			this.getServletContext().setAttribute(GlobalValues.ConnectionStatement_Tag, st);
-			
-		} catch (SQLException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
+		}
+		catch (Exception ex) {
+		    getServletContext().log("SQLGatewayPool Error: " + ex.getMessage());
 		}
 	}
 
