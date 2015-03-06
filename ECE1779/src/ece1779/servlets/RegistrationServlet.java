@@ -16,6 +16,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
 import ece1779.Main;
+import ece1779.DAO.UserDBOperations;
 import ece1779.commonObjects.Images;
 import ece1779.commonObjects.User;
 import ece1779.loadBalance.CloudWatching;
@@ -72,79 +73,95 @@ public class RegistrationServlet extends HttpServlet {
 			if (user.length() != 0 && pwd.length() != 0 && pwd2.length() != 0) {
 				// password and repeated password must match
 				if (pwd.compareTo(pwd2) == 0) {
-					try {
-						// Create connection to database
-						st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
+					// Setup user object
+					User currentUser = new User(-1, user, null);
 
-						// Retrieve information from database with given username
-						rs = st.executeQuery("select * from " + GlobalValues.dbTable_Users + " where login='" + user
-								+ "'");
-						
-						// if username already exists, registration fails
-						if (!userNameTaken (rs))
-						{
-							// Enter data into database
-							int i = st
-									.executeUpdate("insert into users(login, password) values ('"
-											+ user + "','" + pwd + "')");
-	
+					// check if username available
+					// if it is not, then registration fails
+					if (userNameAvailable (currentUser))
+					{
+						// Register data into database
+						// regUser(User, pwd) returns boolean TRUE for success, FALSE for failure
+						boolean regSuccess = regUser(currentUser, pwd);
+
+						// resolve registration success visually
+						if (regSuccess) {
 							// Display success response
-							if (i > 0) {
-								out.println("Registration is Successful.");
-								out.println("<br>");
-								out.println("You may now log in.");
-								out.println("<br>");
-								out.println("<a href='../login.jsp'>Go to Main page</a>");
-							} else {
-								response.sendRedirect("../login.jsp");
-							}
+							createSuccessPage(out, "Registration is Successful.");
 						} else {
-							// Username already exists, no data entered
-							// into database
-							out.println("The username cannot be used");
-							out.println("<br>");
-							out.println("Please try again.");
-							out.println("<br>");
-							out.println("<a href='../login.jsp'>Go to Main page</a>");
+							// Display fail response
+							createErrorPage(out, "Registration failed.");
 						}
-					} catch (SQLException e) {
-						System.out
-								.println("Connection Failed! Check output console");
-						e.printStackTrace();
-					} finally {
-				        if (rs != null) try { rs.close(); } catch (SQLException logOrIgnore) {}
-				    }
+					}
+					// Username already exists, no data entered
+					// into database 
+					else {
+						createErrorPage(out, "Username already exists");
+					}
 				} else {
 					// Password and Password2 did not match, no data entered
 					// into database
-					out.println("The passwords you entered did not match each other.");
-					out.println("<br>");
-					out.println("Please try again.");
-					out.println("<br>");
-					out.println("<a href='../login.jsp'>Go to Main page</a>");
+					createErrorPage(out, "The passwords you entered did not match each other.");
 				}
 			} else {
 				// A field is left empty, no data entered into database
-				out.println("The username or password was left empty.");
-				out.println("<br>");
-				out.println("Please try again.");
-				out.println("<br>");
-				out.println("<a href='../login.jsp'>Go to Main page</a>");
+				createErrorPage(out, "The username or password was left empty.");
 			}
 		} else {
 			// username entered was manager's username
-			out.println("The username cannot be used");
-			out.println("<br>");
-			out.println("Please try again.");
-			out.println("<br>");
-			out.println("<a href='../login.jsp'>Go to Main page</a>");
+			createErrorPage(out, "The username cannot be used");
 		}
 	}
 	
-	// checks if username already exists in database
-	private boolean userNameTaken (ResultSet rs) {
+	// creates the error page and redirect back to main page
+	private void createErrorPage (PrintWriter out, String reason) {
+		out.println(reason);
+		out.println("<br>");
+		out.println("Please try again.");
+		out.println("<br>");
+		out.println("<a href='../login.jsp'>Go to Main page</a>");
+	}
+	
+	// creates the success page and redirect back to main page
+	private void createSuccessPage (PrintWriter out, String reason) {
+		out.println(reason);
+		out.println("<br>");
+		out.println("You may now log in.");
+		out.println("<br>");
+		out.println("<a href='../login.jsp'>Go to Main page</a>");
+	}
+	
+	// checks if username exists in database
+	private boolean userNameAvailable (User username) {
+		// Call statement to database
+		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
+		UserDBOperations udbo = new UserDBOperations(username, st);
+
 		try {
-			return rs.first();
+			return (udbo.findUserID() == -1 ? true : false);			
+		} catch (SQLException e) {
+			System.out.println("Connection Failed! Check output console");
+			e.printStackTrace();
+			return true;
+		}
+	}
+
+	/**
+	 *  Actual procedure to add User to database
+	 */
+	private boolean regUser (User username, String pwd) {
+		// Call statement to database
+		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
+		UserDBOperations udbo = new UserDBOperations(username, st);
+
+		try {
+			boolean regResult;
+			
+			// Call userDBops addUser method
+			// attempt to register the user
+			regResult = udbo.addUser(pwd);
+			
+			return regResult;
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
