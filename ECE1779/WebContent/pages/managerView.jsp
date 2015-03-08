@@ -15,6 +15,53 @@
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <title>Manager View</title>
 <style type="text/css">
+.deleteAll {
+	-moz-box-shadow: inset 0px 1px 0px 0px #f29c93;
+	-webkit-box-shadow: inset 0px 1px 0px 0px #f29c93;
+	box-shadow: inset 0px 1px 0px 0px #f29c93;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #fe1a00
+		), color-stop(1, #ce0100));
+	background: -moz-linear-gradient(top, #fe1a00 5%, #ce0100 100%);
+	background: -webkit-linear-gradient(top, #fe1a00 5%, #ce0100 100%);
+	background: -o-linear-gradient(top, #fe1a00 5%, #ce0100 100%);
+	background: -ms-linear-gradient(top, #fe1a00 5%, #ce0100 100%);
+	background: linear-gradient(to bottom, #fe1a00 5%, #ce0100 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fe1a00',
+		endColorstr='#ce0100', GradientType=0);
+	background-color: #fe1a00;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	border: 1px solid #d83526;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-family: arial;
+	font-size: 15px;
+	font-weight: bold;
+	padding: 7px 69px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #b23e35;
+}
+
+.deleteAll:hover {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ce0100
+		), color-stop(1, #fe1a00));
+	background: -moz-linear-gradient(top, #ce0100 5%, #fe1a00 100%);
+	background: -webkit-linear-gradient(top, #ce0100 5%, #fe1a00 100%);
+	background: -o-linear-gradient(top, #ce0100 5%, #fe1a00 100%);
+	background: -ms-linear-gradient(top, #ce0100 5%, #fe1a00 100%);
+	background: linear-gradient(to bottom, #ce0100 5%, #fe1a00 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ce0100',
+		endColorstr='#fe1a00', GradientType=0);
+	background-color: #ce0100;
+}
+
+.deleteAll:active {
+	position: relative;
+	top: 1px;
+}
+
 .divSur {
 	border-style: solid;
 	width: 650px;
@@ -49,6 +96,31 @@
 
 <body>
 	<script type="text/javascript">
+		function deleteAllData() {
+			document.getElementById("deleteAll").disabled = true;
+			if (window
+					.confirm('Attention: This function allows you to delete all image and user data in S3 and database. Operation is Irreversible.')) {
+				$
+						.ajax({
+							type : "POST",
+							url : "../DeleteServlet",
+							data : {},
+							success : function(result) {
+								if (result == "SUCCESS") {
+									document.getElementById("deleteAll").disabled = false;
+									alert("Data has been deleted!")
+								} else {
+									document.getElementById("deleteAll").disabled = false;
+									alert("Error incured, try again later.")
+								}
+							}
+						})
+				return true;
+			} else {
+				document.getElementById("deleteAll").disabled = false;
+				return false;
+			}
+		}
 		function manualGrow() {
 			$
 					.ajax({
@@ -240,10 +312,17 @@
 					onclick="stopAutoScaling()"></td>
 			</tr>
 			<tr>
-				<td></td>
-
+				<td><h3>
+						<u>Delete All Data</u>
+					</h3></td>
 			</tr>
-
+			<tr>
+				<td>Delete all images and user data stored in S3 and database.</td>
+			</tr>
+			<tr>
+				<td><input type=button id=deleteAll class=deleteAll
+					value="Delete All Data" onclick="deleteAllData()"></td>
+			</tr>
 		</table>
 	</form>
 

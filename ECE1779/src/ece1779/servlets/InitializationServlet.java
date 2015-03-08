@@ -73,6 +73,7 @@ public class InitializationServlet extends HttpServlet {
 		}
 		catch (Exception ex) {
 		    getServletContext().log("SQLGatewayPool Error: " + ex.getMessage());
+		    ex.printStackTrace();
 		}
 	}
 
