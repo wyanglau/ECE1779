@@ -1,8 +1,6 @@
 package ece1779.servlets;
 
 import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -28,12 +26,11 @@ public class InitializationServlet extends HttpServlet {
 	public InitializationServlet() {
 		super();
 	}
-	
-	public void init(){
-		initAWS(this.getServletConfig());
-		initJDBC();
-	}
 
+	public void init() {
+		initAWS(this.getServletConfig());
+		initJDBC(this.getServletConfig());
+	}
 
 	private void initAWS(ServletConfig config) {
 
@@ -45,35 +42,34 @@ public class InitializationServlet extends HttpServlet {
 				awsCredentials);
 	}
 
-	private void initJDBC() {
-		try {  
-		    //Initialize connection pool    
+	private void initJDBC(ServletConfig config) {
+		try {
+			// Initialize connection pool
 
-		    getServletContext().log("SQLGatewayPool: Connecting to DB");
+			getServletContext().log("SQLGatewayPool: Connecting to DB");
 
-			   
-		    DriverAdapterCPDS ds = new DriverAdapterCPDS();
-		    ds.setDriver("com.mysql.jdbc.Driver");
-		    ds.setUrl("jdbc:mysql://"
-					+ GlobalValues.dbLocation_URL + ":"
-					+ GlobalValues.dbLocation_Port + "/"
-					+ GlobalValues.dbLocation_Schema);
-		    
-		    ds.setUser(GlobalValues.dbAdmin_Name);
-		    ds.setPassword(GlobalValues.dbAdmin_Pass);
+			DriverAdapterCPDS ds = new DriverAdapterCPDS();
+			ds.setDriver(config.getInitParameter("dbDriver"));
+			// ds.setUrl("jdbc:mysql://" + GlobalValues.dbLocation_URL + ":"
+			// + GlobalValues.dbLocation_Port + "/"
+			// + GlobalValues.dbLocation_Schema);
+			ds.setUrl(config.getInitParameter("dbURL"));
 
-		    SharedPoolDataSource dbcp = new SharedPoolDataSource();
-		    dbcp.setConnectionPoolDataSource(ds);
-		    
-		    Connection con = dbcp.getConnection();
-	
-		    Statement st = con.createStatement();
-			
-			this.getServletContext().setAttribute(GlobalValues.ConnectionStatement_Tag, st);
-		}
-		catch (Exception ex) {
-		    getServletContext().log("SQLGatewayPool Error: " + ex.getMessage());
-		    ex.printStackTrace();
+			ds.setUser(config.getInitParameter("dbUser"));
+			ds.setPassword(config.getInitParameter("dbPassword"));
+
+			SharedPoolDataSource dbcp = new SharedPoolDataSource();
+			dbcp.setConnectionPoolDataSource(ds);
+
+			Connection con = dbcp.getConnection();
+
+			Statement st = con.createStatement();
+
+			this.getServletContext().setAttribute(
+					GlobalValues.ConnectionStatement_Tag, st);
+		} catch (Exception ex) {
+			getServletContext().log("SQLGatewayPool Error: " + ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
