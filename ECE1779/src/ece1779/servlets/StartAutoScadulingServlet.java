@@ -1,6 +1,7 @@
 package ece1779.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Timer;
 
 import javax.servlet.ServletException;
@@ -40,20 +41,32 @@ public class StartAutoScadulingServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		PrintWriter out = response.getWriter();
 		try {
 
 			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
 					.getServletContext().getAttribute(
 							GlobalValues.AWS_CREDENTIALS);
 
-			String expandThreshlod = (String) request
-					.getParameter("expandThreshlod");
-			String shrinkThreshlod = (String) request
-					.getParameter("shrinkThreshlod");
+			Double expandThreshlod = Double.parseDouble((String) request
+					.getParameter("expandThreshlod"));
+			Double shrinkThreshlod = Double.parseDouble((String) request
+					.getParameter("shrinkThreshlod"));
 
-			String growRatio = (String) request.getParameter("growRatio");
-			String shrinkRatio = (String) request.getParameter("shrinkRatio");
+			int growRatio = Integer.parseInt((String) request
+					.getParameter("growRatio"));
+			int shrinkRatio = Integer.parseInt((String) request
+					.getParameter("shrinkRatio"));
+
+			if ((expandThreshlod <= 0) || (shrinkThreshlod <= 0)
+					|| (expandThreshlod <= shrinkThreshlod) || (growRatio < 2)
+					|| (shrinkRatio < 2)) {
+				System.out
+						.println("[StartAutoScadulingServlet]Invalid Ratio Parameter");
+				out.print(GlobalValues.INVALID_PARAMETER);
+				return;
+
+			}
 			System.out
 					.println("[StartAutoScadulingServlet] Get parameters from request : [expandThreshlod:"
 							+ expandThreshlod
@@ -67,15 +80,15 @@ public class StartAutoScadulingServlet extends HttpServlet {
 			System.out
 					.println("[StartAutoScadulingServlet] scheduling new timer, current time is "
 							+ start);
-			timer.schedule(
-					new AutoScaling(awsCredentials, Double
-							.parseDouble(expandThreshlod), Double
-							.parseDouble(shrinkThreshlod), Integer
-							.parseInt(growRatio), Integer.parseInt(shrinkRatio)),
-					0, 5 * 60 * 1000); // 5mins
-			this.getServletContext().setAttribute("Timer", timer);
+			timer.schedule(new AutoScaling(awsCredentials, expandThreshlod,
+					shrinkThreshlod, growRatio, shrinkRatio), 0, 5 * 60 * 1000); // 5mins
+			request.getSession().setAttribute("Timer", timer);
+			out.print(GlobalValues.SUCCESS);
+		} catch (NumberFormatException nfe) {
+			out.print(GlobalValues.INVALID_PARAMETER);
+			nfe.printStackTrace();
 		} catch (Exception e) {
-			// to do : handle the aws exceptions
+			out.print(GlobalValues.ERROR);
 			e.printStackTrace();
 		}
 

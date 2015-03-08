@@ -6,14 +6,43 @@
 <%@page import="ece1779.loadBalance.*"%>
 <%@page import="ece1779.commonObjects.*"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.Timer"%>
 <%@page import="com.amazonaws.services.cloudwatch.model.Datapoint"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <title>Manager View</title>
 <style type="text/css">
 .divSur {
 	border-style: solid;
+	width: 650px;
+}
+
+.reloadbtn {
+	background-color: #44c767;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	border: 1px solid #18ab29;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-family: arial;
+	font-size: 16px;
+	padding: 4px 4px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #2f6627;
+}
+
+.reloadbtn:hover {
+	background-color: #5cbf2a;
+}
+
+.reloadbtn:active {
+	position: relative;
+	top: 1px;
 }
 </style>
 </head>
@@ -21,72 +50,148 @@
 <body>
 	<script type="text/javascript">
 		function manualGrow() {
-			document.display.action = "../ManualGrowServlet";
-			document.display.submit();
+			$
+					.ajax({
+						type : "POST",
+						url : "../ManualGrowServlet",
+						data : {
+							manualGrowRatio : $("#manualGrowRatio").val()
+						},
+						success : function(result) {
+							if (result == "SUCCESS") {
+								alert("Successful Operation. Please wait for the startup of instances.")
+							} else if (result == "INVALID_PARAMETER") {
+								alert("Invalid input of ratio, only integer larger than 1 acceptable.")
+							} else {
+								alert("AWS Error incured, try again later.")
+							}
+						}
+					})
 		}
 		function manualShrink() {
-			document.display.action = "../ManualShrinkServlet";
-			document.display.submit();
+			$
+					.ajax({
+						type : "POST",
+						url : "../ManualShrinkServlet",
+						data : {
+							manualShrinkRatio : $("#manualShrinkRatio").val()
+						},
+						success : function(result) {
+							if (result == "SUCCESS") {
+								alert("Successful Operation. Please wait for the shutdown of instances.")
+							} else if (result == "INVALID_PARAMETER") {
+								alert("Invalid input of ratio, only integer larger than 1 acceptable.")
+							} else {
+								alert("AWS Error incured, try again later.")
+							}
+						}
+					})
+		}
+		function stopAutoScaling() {
+			$.ajax({
+				type : "POST",
+				url : "../StopAutoScadulingServlet",
+				success : function(result) {
+					document.getElementById("stopAuto").disabled = true;
+					document.getElementById("startAuto").disabled = false;
+				}
+			})
 		}
 
 		function startAutoScaling() {
-			document.display.action = "../StartAutoScadulingServlet";
-			document.display.submit();
-		}
-		function stopAutoScaling() {
-			document.display.action = "../StopAutoScadulingServlet";
-			document.display.submit();
+			document.getElementById("stopAuto").disabled = false;
+			document.getElementById("startAuto").disabled = true;
+			$
+					.ajax({
+						type : "POST",
+						url : "../StartAutoScadulingServlet",
+						data : {
+							expandThreshlod : $("#expandThreshlod").val(),
+							shrinkThreshlod : $("#shrinkThreshlod").val(),
+							growRatio : $("#growRatio").val(),
+							shrinkRatio : $("#growRatio").val()
+						},
+						success : function(result) {
+
+							if (result == "SUCCESS") {
+								alert("Auto-Scaling started up.");
+							} else if (result == "INVALID_PARAMETER") {
+								alert("Invalid parameters.Required Pattern: Growing Threshold > Shrinking Threshold > 0 , Ratios should be integers and > 2")
+								document.getElementById("stopAuto").disabled = true;
+								document.getElementById("startAuto").disabled = false;
+							} else {
+								alert("Error incured while starting auto-scaling.");
+								document.getElementById("stopAuto").disabled = true;
+								document.getElementById("startAuto").disabled = false;
+							}
+						}
+					})
 		}
 	</script>
-
 	<div align=center>
 		<h1>Manager View</h1>
 
 	</div>
 	<p></p>
+
 	<table align=center>
 
 		<%
+			Timer timer = (Timer) session.getAttribute("Timer");
+			String stopTag = "";
+			String startTag = "";
+			if (timer == null) {
+				startTag = "";
+				stopTag = "disabled=disabled";
+			} else {
+				stopTag = "";
+				startTag = "disabled=disabled";
+			}
+
 			CloudWatching cw = (CloudWatching) session
 					.getAttribute(GlobalValues.CLOUD_WATCHING);
 
-			// Instead of verifying if it is manager...I do it so roughly...
-			if (!((String) session.getAttribute(GlobalValues.PRIVILEGE_TAG))
-					.equals(GlobalValues.PRIVILEGE_ADMIN)) {
-				cw = null;
-			}
 			List<CloudWatcher> watchers = cw.getCPUUtilization();
 		%>
 		<tr>
 			<td><b><%=watchers.size()%> of <%=cw.getAllEC2instances().size()%>
-					instances is running. <input type="button"
-					onclick="javascript:window.location.reload()" value="Reload">
-			</b></td>
+					instances is running. <a href="#" class="reloadbtn"
+					onclick="javascript:window.location.reload()">Reload</a> </b></td>
 		</tr>
-		<%
-			for (CloudWatcher watcher : watchers) {
-		%>
-		<tr>
-			<td><h3>
-					<b>Instance ID</b>:
-					<%=watcher.getInstanceId()%></h3></td>
-		</tr>
-		<%
-			for (Datapoint datapoint : watcher.getDatapoints()) {
-		%>
-		<tr>
-			<td><b>Time Stamp:</b><%=datapoint.getTimestamp()%></td>
-			<td></td>
-			<td></td>
-			<td><b>CPU Utilization</b>:<%=datapoint.getMaximum()%>%</td>
-		</tr>
-		<%
-			}
-			}
-		%>
-		<tr></tr>
-		<tr></tr>
 	</table>
+	<div align=center>
+		<div class=divSur>
+			<table>
+				<%
+					for (CloudWatcher watcher : watchers) {
+				%>
+				<tr>
+					<td><h3>
+							<b>Instance ID</b>:
+							<%=watcher.getInstanceId()%></h3></td>
+				</tr>
+				<%
+					for (Datapoint datapoint : watcher.getDatapoints()) {
+				%>
+				<tr>
+					<td><b>Time Stamp:</b><%=datapoint.getTimestamp()%></td>
+					<td></td>
+					<td></td>
+					<td><b>CPU Utilization</b>:<%=datapoint.getMaximum()%>%</td>
+				</tr>
+				<%
+					}
+					}
+				%>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+			</table>
+		</div>
+	</div>
 	<form name=display action="" method=POST>
 		<table align=center>
 			<tr>
@@ -97,12 +202,14 @@
 			<tr>
 
 				<td>Shrinking Ratio:</td>
-				<td><input type=text value=2 name=manualShrinkRatio></td>
+				<td><input type=text value=2 name=manualShrinkRatio
+					id=manualShrinkRatio></td>
 				<td><input type=button value=shrink onclick="manualShrink()"></td>
 			</tr>
 			<tr>
 				<td>Growing Ratio:</td>
-				<td><input type=text value=2 name=manualGrowRatio></td>
+				<td><input type=text value=2 name=manualGrowRatio
+					id=manualGrowRatio></td>
 				<td><input type=button value=grow onclick="manualGrow()"></td>
 			</tr>
 
@@ -117,20 +224,24 @@
 			</tr>
 			<tr>
 				<td>Growing Threshold: <input type=text value=80
-					name=expandThreshlod>(%)
+					name=expandThreshlod id=expandThreshlod>(%)
 				</td>
-				<td>Ratio: <input type=text value=2 name=growRatio></td>
+				<td>Ratio: <input type=text value=2 name=growRatio id=growRatio></td>
+				<td><input id=startAuto type=button value=start
+					onclick="startAutoScaling()" <%=startTag%>></td>
 			</tr>
 			<tr>
 				<td>Shrinking Threshold: <input type=text value=30
-					name=shrinkThreshlod>(%)
+					name=shrinkThreshlod id=shrinkThreshlod>(%)
 				</td>
-				<td>Ratio: <input type=text value=2 name=shrinkRatio></td>
+				<td>Ratio: <input type=text value=2 name=shrinkRatio
+					id=shrinkRatio></td>
+				<td><input type="button" id=stopAuto value=stop <%=stopTag%>
+					onclick="stopAutoScaling()"></td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type=button value=start onclick="startAutoScaling()">
-					<input type="button" value=stop onclick="stopAutoScaling()"></td>
+
 			</tr>
 
 		</table>

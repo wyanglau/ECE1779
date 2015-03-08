@@ -1,7 +1,7 @@
 package ece1779.servlets;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
-import ece1779.loadBalance.LoadBalancerOperation;
 import ece1779.loadBalance.WorkerPoolManagement;
 
 /**
@@ -43,24 +42,31 @@ public class ManualGrowServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		PrintWriter out = response.getWriter();
 		try {
+
 			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
 					.getServletContext().getAttribute(
 							GlobalValues.AWS_CREDENTIALS);
-			int ratio = Integer.parseInt((String) request.getParameter("manualGrowRatio"));
-			if(ratio ==0){
-				System.out.println("Invalid Ratio Parameter");
+			int ratio = Integer.parseInt((String) request
+					.getParameter("manualGrowRatio"));
+			if ((ratio < 2)) {
+				System.out
+						.println("[ManualGrowServlet]Invalid Ratio Parameter");
+				out.print(GlobalValues.INVALID_PARAMETER);
 				return;
 			}
 			WorkerPoolManagement wpm = new WorkerPoolManagement(awsCredentials);
 
-			System.out.println("Expanding Worker Pool");
+			System.out.println("[ManualGrowServlet]Expanding Worker Pool");
 			wpm.growingByRatio(ratio);
-
+			out.print(GlobalValues.SUCCESS);
+		} catch (NumberFormatException nfe) {
+			out.print(GlobalValues.INVALID_PARAMETER);
+			nfe.printStackTrace();
 		} catch (Exception e) {
 
-			// to do ...exception handling
+			out.print(GlobalValues.ERROR);
 			e.printStackTrace();
 		}
 

@@ -86,7 +86,6 @@
 		<display-name>StartAutoScadulingServlet</display-name>
 		<servlet-name>StartAutoScadulingServlet</servlet-name>
 		<servlet-class>ece1779.servlets.StartAutoScadulingServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StartAutoScadulingServlet</servlet-name>
@@ -97,7 +96,6 @@
 		<display-name>ManualShrinkServlet</display-name>
 		<servlet-name>ManualShrinkServlet</servlet-name>
 		<servlet-class>ece1779.servlets.ManualShrinkServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ManualShrinkServlet</servlet-name>
@@ -108,7 +106,6 @@
 		<display-name>ManualGrowServlet</display-name>
 		<servlet-name>ManualGrowServlet</servlet-name>
 		<servlet-class>ece1779.servlets.ManualGrowServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ManualGrowServlet</servlet-name>
@@ -119,7 +116,6 @@
 		<display-name>StopAutoScadulingServlet</display-name>
 		<servlet-name>StopAutoScadulingServlet</servlet-name>
 		<servlet-class>ece1779.servlets.StopAutoScadulingServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StopAutoScadulingServlet</servlet-name>
@@ -130,7 +126,6 @@
 		<display-name>FileUploadServlet</display-name>
 		<servlet-name>FileUploadServlet</servlet-name>
 		<servlet-class>ece1779.servlets.FileUploadServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>FileUploadServlet</servlet-name>

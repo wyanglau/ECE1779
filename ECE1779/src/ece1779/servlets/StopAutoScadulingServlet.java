@@ -1,12 +1,15 @@
 package ece1779.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Timer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import ece1779.GlobalValues;
 
 /**
  * Servlet implementation class StopAutoScadulingServlet
@@ -39,8 +42,16 @@ public class StopAutoScadulingServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		System.out
 				.println("[StopAutoScadulingServlet] Stopping auto scaling timer.");
-		Timer timer = (Timer) this.getServletContext().getAttribute("Timer");
-		timer.cancel();
+		PrintWriter out = response.getWriter();
+		try {
+			Timer timer = (Timer) request.getSession().getAttribute("Timer");
+			timer.cancel();
+			out.print(GlobalValues.SUCCESS);
+			request.getSession().setAttribute("Timer", null);
+		} catch (Exception e) {
+			out.print(GlobalValues.ERROR);
+			e.printStackTrace();
+		}
 
 	}
 

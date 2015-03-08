@@ -1,6 +1,7 @@
 package ece1779.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,31 +42,39 @@ public class ManualShrinkServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
 		try {
 
-			System.out.println("Shrinking Worker Pool");
 			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
 					.getServletContext().getAttribute(
 							GlobalValues.AWS_CREDENTIALS);
+			System.out.println((String) request
+					.getParameter("manualShrinkRatio"));
 			int ratio = Integer.parseInt((String) request
 					.getParameter("manualShrinkRatio"));
 
-			if (ratio == 0) {
-				System.out.println("Invalid Ratio Parameter");
+			if ((ratio < 2)) {
+				System.out
+						.println("[ManualShrinkServlet]Invalid Ratio Parameter");
+				out.print(GlobalValues.INVALID_PARAMETER);
 				return;
 			}
 			WorkerPoolManagement wpm = new WorkerPoolManagement(awsCredentials);
-			wpm.shrinking(ratio);
 
+			System.out.println("[ManualShrinkServlet]Shrinking Worker Pool");
+
+			wpm.shrinking(ratio);
+			out.print(GlobalValues.SUCCESS);
+
+		} catch (NumberFormatException nfe) {
+			out.print(GlobalValues.INVALID_PARAMETER);
+			nfe.printStackTrace();
 		} catch (Exception e) {
-			// to do
+			out.print(GlobalValues.ERROR);
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void main(String[] args) {
-
-	}
 
 }

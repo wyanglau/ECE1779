@@ -2,9 +2,11 @@ package ece1779.servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +20,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
 import ece1779.commonObjects.User;
-import ece1779.userOperations.ImageProcessing;
 import ece1779.userOperations.UserOperations;
 
 /**
@@ -50,13 +51,14 @@ public class FileUploadServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
 		try {
+
+			PrintWriter out = response.getWriter();
+			out.write("<br><br><br><br><br><br><br><br><br><br><br><br><div line-height=100px height=100px align=center><h1>Uploading...Hold on...</h1></div>");
 			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
 					.getServletContext().getAttribute(
 							GlobalValues.AWS_CREDENTIALS);
 
-			/** Harris: GlobalValues.USERNAME is a String of Username, not User object! */
 			User user = (User) request.getSession().getAttribute(
 					GlobalValues.USERNAME);
 			// Create a factory for disk-based file items
@@ -93,14 +95,10 @@ public class FileUploadServlet extends HttpServlet {
 			File fileToBeStored = new File(newFilePath);
 			theFile.write(fileToBeStored);
 
-			// --- tstdata
-			ImageProcessing ip = new ImageProcessing();
-			ip.transform(fileToBeStored);
-			// ---
-
 			UserOperations uo = new UserOperations(user, awsCredentials);
-			// uo.uploadAndSave(fileToBeStored);
+			uo.uploadAndSave(fileToBeStored);
 
+			request.setAttribute(GlobalValues.UPLOAD_RESPONSE, true);
 			// /**
 			// * testdata
 			// */
@@ -113,12 +111,14 @@ public class FileUploadServlet extends HttpServlet {
 			// files.add(fileToBeStored);
 			// s3.save(files, imgObj);
 
-		} catch (FileUploadException fue) {
-			fue.printStackTrace();
-
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			request.setAttribute(GlobalValues.UPLOAD_RESPONSE, false);
 			e.printStackTrace();
+		} finally {
+			RequestDispatcher rd = request
+					.getRequestDispatcher("/pages/display.jsp");
+
+			rd.forward(request, response);
 		}
 
 	}

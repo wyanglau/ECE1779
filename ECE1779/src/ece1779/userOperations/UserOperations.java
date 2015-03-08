@@ -28,8 +28,8 @@ public class UserOperations {
 	 */
 	public void load() {
 
-		UserDBOperations db = new UserDBOperations(this.user, statement);
-		this.user.setImgs(db.findAllImgs());
+//		UserDBOperations db = new UserDBOperations(this.user, statement);
+//		this.user.setImgs(db.findAllImgs());
 
 	}
 
@@ -44,20 +44,21 @@ public class UserOperations {
 	public Images uploadAndSave(File image) throws IOException,
 			InterruptedException, IM4JavaException {
 
-		ImageProcessing ip = new ImageProcessing();
-		List<File> images = ip.transform(image);
-
-		Images imgObj = new Images(user.getId(), -1, null);
-
-		// save to s3
-		UserS3Operations s3 = new UserS3Operations(credentials, user);
-		s3.save(images, imgObj);
-
-		// update database, retrieve image ID from database and return the imgObj
-		// note: addImage returns int imageID from SQL right after image has been added
-		UserDBOperations db = new UserDBOperations(user, statement);
-		imgObj.setImgId(db.addImage(imgObj));
-		return imgObj;
+//		ImageProcessing ip = new ImageProcessing();
+//		List<File> images = ip.transform(image);
+//
+//		Images imgObj = new Images(user.getId(), -1, null);
+//
+//		// save to s3
+//		UserS3Operations s3 = new UserS3Operations(credentials, user);
+//		s3.save(images, imgObj);
+//
+//		// update database, retrieve image ID from database and return the imgObj
+//		// note: addImage returns int imageID from SQL right after image has been added
+//		UserDBOperations db = new UserDBOperations(user, statement);
+//		imgObj.setImgId(db.addImage(imgObj));
+//		return imgObj;
+		return null;
 
 	}
 

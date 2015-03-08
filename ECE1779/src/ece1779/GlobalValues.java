@@ -78,4 +78,11 @@ public class GlobalValues {
 
 	public static String SPECIFIC_IMAGE = "SPECIFIC_IMAGE";
 
+	public static String UPLOAD_RESPONSE = "uploadresponse";
+
+	public static String SUCCESS = "SUCCESS";
+	public static String ERROR = "ERROR";
+	public static String INVALID_PARAMETER="INVALID_PARAMETER";
+
+
 }
