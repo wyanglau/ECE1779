@@ -22,7 +22,7 @@
     </init-param>
     <init-param>
       <param-name>dbURL</param-name>
-      <param-value>jdbc:mysql://ece1779winter2015db.cf2zhhwzx2tf.us-east-1.rds.amazonaws.com</param-value>
+      <param-value>jdbc:mysql://ece1779winter2015db.cf2zhhwzx2tf.us-east-1.rds.amazonaws.com/ece1779group14</param-value>
     </init-param>
     <init-param>
       <param-name>dbUser</param-name>
