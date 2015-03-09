@@ -10,11 +10,11 @@
     <servlet-class>ece1779.servlets.InitializationServlet</servlet-class>
     <init-param>
       <param-name>AWSaccessKey</param-name>
-      <param-value></param-value>
+      <param-value>AKIAJJJT4OW55CJN3NXA</param-value>
     </init-param>
     <init-param>
       <param-name>AWSsecretKey</param-name>
-      <param-value></param-value>
+      <param-value>k65vWG+R+iPFsZHajU7+kusP2yXw0WIVujpG8Asf</param-value>
     </init-param>
     <init-param>
       <param-name>dbDriver</param-name>

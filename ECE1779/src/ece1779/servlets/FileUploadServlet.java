@@ -106,22 +106,17 @@ public class FileUploadServlet extends HttpServlet {
 			session.setAttribute(GlobalValues.CURRENT_USER, user);
 			System.out.println("[FileUploadServlet] Upload done.");
 
-			RequestDispatcher rd = request
-					.getRequestDispatcher("/pages/display.jsp");
-
-			rd.forward(request, response);
-
 		} catch (Exception e) {
 			request.setAttribute(GlobalValues.UPLOAD_RESPONSE, false);
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write(e.toString());
 			e.printStackTrace();
 
 		} finally {
-			// RequestDispatcher rd = request
-			// .getRequestDispatcher("/pages/display.jsp");
-			//
-			// rd.forward(request, response);
+			 RequestDispatcher rd = request
+			 .getRequestDispatcher("/pages/display.jsp");
+			
+			 rd.forward(request, response);
 		}
 
 	}

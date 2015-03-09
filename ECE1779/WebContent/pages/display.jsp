@@ -137,7 +137,7 @@ img {
 		method=POST>
 		<div align=center>
 			<font size=20> <b>Welcome, <%=user.getUserName()%>!
-			</b> <input class=exitButton type=submit value=exit>
+			</b> <input class=exitButton type=submit value=Logout>
 			</font>
 		</div>
 	</form>
