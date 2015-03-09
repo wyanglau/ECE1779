@@ -60,9 +60,12 @@ public class LoginServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		// Get username and password from the login form textfields in
 		// ../login.jsp
+
+		System.out.println("[LoginServlet] Begin to login.");
 		String user = (String) request.getParameter(GlobalValues.USERNAME);
 		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
-
+		System.out.println("[LoginServlet] Input user:" + user + " Password:"
+				+ pwd);
 		// Setup user object
 		User currentUser = new User(-1, user, null);
 
@@ -115,7 +118,7 @@ public class LoginServlet extends HttpServlet {
 
 	// checks if user exists in database
 	private boolean userExists(User currentUser) {
-
+		System.out.println("[LoginServlet] checking does user exist.");
 		try {
 			UserDBOperations udbo = new UserDBOperations(currentUser, dbcp);
 			int tempInt = udbo.findUserID();
@@ -134,6 +137,7 @@ public class LoginServlet extends HttpServlet {
 
 	// checks if entered info matches user password in database
 	private boolean userPasswordMatches(User currentUser, String password) {
+		System.out.println("[LoginServlet]Checking if it is authentic user");
 		try {
 			UserDBOperations udbo = new UserDBOperations(currentUser, dbcp);
 			return (udbo.findUserPW().compareTo(password) == 0 ? true : false);

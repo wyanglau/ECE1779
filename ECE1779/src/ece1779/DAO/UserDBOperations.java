@@ -1,5 +1,6 @@
 package ece1779.DAO;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,7 +28,8 @@ public class UserDBOperations {
 	 */
 	public List<Images> findAllImgs() throws SQLException {
 		ResultSet rs = null;
-		Statement statement = this.dbcp.getConnection().createStatement();
+		Connection con = this.dbcp.getConnection();
+		Statement statement = con.createStatement();
 		try {
 			// retrieve list of all image sets belonging to current user
 			rs = statement.executeQuery("select * from "
@@ -52,11 +54,18 @@ public class UserDBOperations {
 			return imgSet;
 
 		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (SQLException logOrIgnore) {
+			try {
+				if (statement != null) {
+					statement.close();
 				}
+				if (con != null) {
+					con.close();
+				}
+				if (rs != null)
+
+					rs.close();
+			} catch (SQLException logOrIgnore) {
+			}
 		}
 	}
 
@@ -67,7 +76,8 @@ public class UserDBOperations {
 	 */
 	public int findUserID() throws SQLException {
 		ResultSet rs = null;
-		Statement statement = this.dbcp.getConnection().createStatement();
+		Connection con = this.dbcp.getConnection();
+		Statement statement = con.createStatement();
 		try {
 			// Retrieve information from database with given username and
 			// password
@@ -86,11 +96,19 @@ public class UserDBOperations {
 			}
 
 		} finally {
-			if (rs != null)
-				try {
+			try {
+				if (rs != null)
+
 					rs.close();
-				} catch (SQLException logOrIgnore) {
+
+				if (statement != null) {
+					statement.close();
 				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException logOrIgnore) {
+			}
 		}
 	}
 
@@ -101,7 +119,8 @@ public class UserDBOperations {
 	 */
 	public String findUserPW() throws SQLException {
 		ResultSet rs = null;
-		Statement statement = this.dbcp.getConnection().createStatement();
+		Connection con = this.dbcp.getConnection();
+		Statement statement = con.createStatement();
 		try {
 			// Retrieve information from database with given username and
 			// password
@@ -120,11 +139,19 @@ public class UserDBOperations {
 			}
 
 		} finally {
-			if (rs != null)
-				try {
+			try {
+				if (rs != null)
+
 					rs.close();
-				} catch (SQLException logOrIgnore) {
+
+				if (statement != null) {
+					statement.close();
 				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException logOrIgnore) {
+			}
 		}
 	}
 
@@ -135,18 +162,34 @@ public class UserDBOperations {
 	 */
 	public boolean addUser(String pwd) throws SQLException {
 		// Enter data into database
-		Statement statement = this.dbcp.getConnection().createStatement();
-		int i = statement.executeUpdate("insert into "
-				+ GlobalValues.dbTable_Users + "(login, password) values ('"
-				+ user.getUserName() + "','" + pwd + "')");
+		Connection con = this.dbcp.getConnection();
+		Statement statement = con.createStatement();
+		try {
 
-		// Successful write to SQL database
-		if (i > 0) {
-			return true;
-		}
-		// Write failed
-		else {
-			return false;
+			int i = statement.executeUpdate("insert into "
+					+ GlobalValues.dbTable_Users
+					+ "(login, password) values ('" + user.getUserName()
+					+ "','" + pwd + "')");
+
+			// Successful write to SQL database
+			if (i > 0) {
+				return true;
+			}
+			// Write failed
+			else {
+				return false;
+			}
+		} finally {
+			try {
+
+				if (statement != null) {
+					statement.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException logOrIgnore) {
+			}
 		}
 	}
 
@@ -158,7 +201,8 @@ public class UserDBOperations {
 	public int addImage(Images imageObj) throws SQLException {
 		System.out.println("[UserDBOperations] Saving images to database.");
 		ResultSet rs = null;
-		Statement statement = this.dbcp.getConnection().createStatement();
+		Connection con = this.dbcp.getConnection();
+		Statement statement = con.createStatement();
 		try {
 			// Enter data into database
 			statement.executeUpdate("insert into "
@@ -185,11 +229,17 @@ public class UserDBOperations {
 			}
 
 		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (SQLException logOrIgnore) {
+			try {
+				if (statement != null) {
+					statement.close();
 				}
+				if (con != null) {
+					con.close();
+				}
+				if (rs != null)
+					rs.close();
+			} catch (SQLException logOrIgnore) {
+			}
 		}
 	}
 

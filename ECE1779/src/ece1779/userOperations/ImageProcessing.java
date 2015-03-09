@@ -12,8 +12,11 @@ import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
 
 public class ImageProcessing {
-	private final static String imPath = "/opt/local/bin";
-
+	/**
+	 * local : "/opt/local/bin";
+	 * linux : /usr/bin
+	 */
+	private final static String imPath = "/usr/bin";
 	static {
 		ProcessStarter.setGlobalSearchPath(imPath);
 	}

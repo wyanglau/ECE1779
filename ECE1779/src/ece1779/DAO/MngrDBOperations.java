@@ -1,5 +1,6 @@
 package ece1779.DAO;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -22,7 +23,8 @@ public class MngrDBOperations {
 	 * @throws SQLException
 	 */
 	public void deleteAllDB() throws SQLException {
-		Statement statement = this.dbcp.getConnection().createStatement();
+		Connection con = this.dbcp.getConnection();
+		Statement statement = con.createStatement();
 		try {
 
 			// delete everything from both the users and images table in the
@@ -33,8 +35,16 @@ public class MngrDBOperations {
 					+ GlobalValues.dbTable_Images);
 
 		} finally {
-			if (statement != null)
-				statement.close();
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+
+			}
 
 		}
 	}
