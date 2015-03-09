@@ -23,8 +23,8 @@ public class MngrDBOperations {
 
 			// delete everything from both the users and images table in the
 			// database
-			statement.executeUpdate("truncate " + GlobalValues.dbTable_Users);
-			statement.executeUpdate("truncate " + GlobalValues.dbTable_Images);
+			statement.executeUpdate("DELETE FROM " + GlobalValues.dbTable_Users);
+			statement.executeUpdate("DELETE FROM " + GlobalValues.dbTable_Images);
 
 		} finally {
 			if (statement != null)
