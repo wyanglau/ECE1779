@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 
@@ -27,8 +28,9 @@ public class RegistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private String managerName;
-	private Statement st;
-	private ResultSet rs;
+	
+	private Connection con = null;
+	private Statement st = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -133,16 +135,19 @@ public class RegistrationServlet extends HttpServlet {
 	
 	// checks if username exists in database
 	private boolean userNameAvailable (User username) {
-		// Call statement to database
-		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
-		UserDBOperations udbo = new UserDBOperations(username, st);
-
 		try {
+			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
+			st = con.createStatement();
+			UserDBOperations udbo = new UserDBOperations( username, st);
+			
 			return (udbo.findUserID() == -1 ? true : false);			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return true;
+		} finally {
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
 	}
 
@@ -150,11 +155,11 @@ public class RegistrationServlet extends HttpServlet {
 	 *  Actual procedure to add User to database
 	 */
 	private boolean regUser (User username, String pwd) {
-		// Call statement to database
-		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
-		UserDBOperations udbo = new UserDBOperations(username, st);
-
 		try {
+			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
+			st = con.createStatement();
+			UserDBOperations udbo = new UserDBOperations( username, st);
+			
 			boolean regResult;
 			
 			// Call userDBops addUser method
@@ -166,6 +171,9 @@ public class RegistrationServlet extends HttpServlet {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return false;
+		} finally {
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
 	}
 }

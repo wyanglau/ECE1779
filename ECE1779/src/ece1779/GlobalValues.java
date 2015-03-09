@@ -16,7 +16,7 @@ public class GlobalValues {
 	/**	
      * SQL Connection Statement Tag			
      */			
-	public static final String ConnectionStatement_Tag = "conState";			
+	public static final String Connection_Tag = "conTag";			
 	        
 	/**
 	 * SQL Database information

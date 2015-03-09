@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Cookie;
+import javax.sql.DataSource;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 
@@ -30,7 +31,8 @@ public class LoginServlet extends HttpServlet {
 	private String managerName;
 	private String managerPassword;
 
-	private Statement st;
+	private Connection con = null;
+	private Statement st = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -115,12 +117,11 @@ public class LoginServlet extends HttpServlet {
 	}
 		
 	// checks if user exists in database
-	private boolean userExists (User currentUser) {
-		// Call statement to database
-		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
-		UserDBOperations udbo = new UserDBOperations( currentUser, st);
-		
+	private boolean userExists (User currentUser) {		
 		try {
+			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
+			st = con.createStatement();
+			UserDBOperations udbo = new UserDBOperations( currentUser, st);
 			int tempInt = udbo.findUserID();
 			if (tempInt >= 0)
 			{
@@ -135,22 +136,27 @@ public class LoginServlet extends HttpServlet {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return false;
+		} finally {
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
 	}
 	
 	// checks if entered info matches user password in database
 	private boolean userPasswordMatches (User currentUser, String password) {
-		// Call statement to database
-		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
-		UserDBOperations udbo = new UserDBOperations( currentUser, st);
-		
 		try {
+			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
+			st = con.createStatement();
+			UserDBOperations udbo = new UserDBOperations( currentUser, st);
 			return (udbo.findUserPW().compareTo(password) == 0 ? true : false);
 			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return false;
+		} finally {
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
 	}
 
@@ -207,14 +213,12 @@ public class LoginServlet extends HttpServlet {
 	 * @param session
 	 * 
 	 */
-	private void setCurrentUser(String privilege, User user, HttpSession session) {
-
-		// Call statement to database
-		st = (Statement)this.getServletContext().getAttribute(GlobalValues.ConnectionStatement_Tag);
-		UserDBOperations udbo = new UserDBOperations( user, st);
-		
-		// Load image set of the current user
+	private void setCurrentUser(String privilege, User user, HttpSession session) {// Load image set of the current user
 		try {
+			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
+			st = con.createStatement();
+			UserDBOperations udbo = new UserDBOperations( user, st);
+
 			// manager has userID -2, and does not have an image set
 			// do not try to retrieve image set if manager is logged in
 			if (user.getId() >= 0)
@@ -226,14 +230,17 @@ public class LoginServlet extends HttpServlet {
 			// set user attributes for both Users and Admin
 			session.setAttribute(GlobalValues.USER_INIT, new Main(user));
 			session.setAttribute(GlobalValues.PRIVILEGE_TAG, privilege);
-			
+
 			// test output -> give all keys of current img set
 			// System.out.println(user.getImgs().get(0).getKeys().get(1));
 			
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
-		}	
+		} finally {
+	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
+	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
+		}
 	}
 
 }

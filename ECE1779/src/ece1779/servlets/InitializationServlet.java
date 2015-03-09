@@ -61,12 +61,8 @@ public class InitializationServlet extends HttpServlet {
 			SharedPoolDataSource dbcp = new SharedPoolDataSource();
 			dbcp.setConnectionPoolDataSource(ds);
 
-			Connection con = dbcp.getConnection();
-
-			Statement st = con.createStatement();
-
 			this.getServletContext().setAttribute(
-					GlobalValues.ConnectionStatement_Tag, st);
+					GlobalValues.Connection_Tag, dbcp);
 		} catch (Exception ex) {
 			getServletContext().log("SQLGatewayPool Error: " + ex.getMessage());
 			ex.printStackTrace();
