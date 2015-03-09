@@ -32,7 +32,7 @@ public class UserDBOperations {
 	    ResultSet rs = null;
 		try {
 			// retrieve list of all image sets belonging to current user
-			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userid='" + user.getId()
+			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Images + " where userId='" + user.getId()
 					+ "'");
 			// create an array of img sets
 			List<Images> imgSet = new ArrayList<Images>();
@@ -143,7 +143,7 @@ public class UserDBOperations {
 		ResultSet rs = null;
 		try {
 			// Enter data into database
-			statement.executeUpdate("insert into " + GlobalValues.dbTable_Images + "(userid, key1, key2, key3, key4) values ('"+ user.getId() + "','" + imageObj.getKeys().get(0) + "','" + imageObj.getKeys().get(1) + "','" + imageObj.getKeys().get(2) + "','" + imageObj.getKeys().get(3) + "')");
+			statement.executeUpdate("insert into " + GlobalValues.dbTable_Images + "(userId, key1, key2, key3, key4) values ('"+ user.getId() + "','" + imageObj.getKeys().get(0) + "','" + imageObj.getKeys().get(1) + "','" + imageObj.getKeys().get(2) + "','" + imageObj.getKeys().get(3) + "')");
 			
 			// Retrieve image from SQL after adding it
 			rs = statement.executeQuery("select * from " + GlobalValues.dbTable_Images + " where key1='" + imageObj.getKeys().get(0) + "'");
