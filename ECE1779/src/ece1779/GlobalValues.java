@@ -4,7 +4,7 @@ public class GlobalValues {
 	/**
 	 * KEY of class Main for Servlet Initialization Context
 	 */
-	public static final String USER_INIT = "init";
+	public static final String CURRENT_USER = "current_user";
 
 	public static final String USERNAME = "user";
 	public static final String PASSWORD = "password";

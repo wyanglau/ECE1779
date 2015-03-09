@@ -31,6 +31,7 @@ public class ImageProcessing {
 			InterruptedException, IM4JavaException {
 		System.out.println(file.getAbsolutePath());
 		List<File> images = new ArrayList<File>();
+		images.add(file);
 		images.add(flop(file));
 		images.add(monochrome(file));
 		images.add(negate(file));

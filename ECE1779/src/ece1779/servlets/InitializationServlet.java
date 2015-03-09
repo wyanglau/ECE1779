@@ -12,8 +12,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
 
-import java.sql.*;
-
 import org.apache.commons.dbcp.cpdsadapter.*;
 import org.apache.commons.dbcp.datasources.*;
 

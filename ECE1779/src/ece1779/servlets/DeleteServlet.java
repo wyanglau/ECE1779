@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 
-import javax.sql.DataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.dbcp.datasources.SharedPoolDataSource;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 
@@ -49,7 +50,7 @@ public class DeleteServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		BasicAWSCredentials credentials = (BasicAWSCredentials) this
 				.getServletContext().getAttribute(GlobalValues.AWS_CREDENTIALS);
-		
+
 		Connection con = null;
 		Statement st = null;
 		try {
@@ -57,10 +58,10 @@ public class DeleteServlet extends HttpServlet {
 			MngrS3Operations s3 = new MngrS3Operations(credentials);
 			s3.deleteAllS3();
 
-			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
-			st = con.createStatement();
-
-			MngrDBOperations db = new MngrDBOperations(st);
+			SharedPoolDataSource dbcp = (SharedPoolDataSource) this
+					.getServletContext().getAttribute(
+							GlobalValues.Connection_Tag);
+			MngrDBOperations db = new MngrDBOperations(dbcp);
 
 			db.deleteAllDB();
 
@@ -70,8 +71,16 @@ public class DeleteServlet extends HttpServlet {
 			out.write(GlobalValues.ERROR);
 			e.printStackTrace();
 		} finally {
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
+			if (con != null)
+				try {
+					con.close();
+				} catch (SQLException logOrIgnore) {
+				}
+			if (st != null)
+				try {
+					st.close();
+				} catch (SQLException logOrIgnore) {
+				}
 		}
 
 	}

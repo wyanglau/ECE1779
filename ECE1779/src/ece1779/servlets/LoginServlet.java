@@ -2,8 +2,6 @@ package ece1779.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -12,13 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Cookie;
-import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.datasources.SharedPoolDataSource;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 
 import ece1779.GlobalValues;
-import ece1779.Main;
-import ece1779.commonObjects.Images;
 import ece1779.commonObjects.User;
 import ece1779.loadBalance.CloudWatching;
 import ece1779.DAO.*;
@@ -30,9 +27,7 @@ public class LoginServlet extends HttpServlet {
 
 	private String managerName;
 	private String managerPassword;
-
-	private Connection con = null;
-	private Statement st = null;
+	private SharedPoolDataSource dbcp;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -45,6 +40,8 @@ public class LoginServlet extends HttpServlet {
 		managerName = this.getServletConfig().getInitParameter("Manager");
 		managerPassword = this.getServletConfig().getInitParameter(
 				"ManagerPassword");
+		dbcp = (SharedPoolDataSource) this.getServletContext().getAttribute(
+				GlobalValues.Connection_Tag);
 	}
 
 	/**
@@ -65,7 +62,7 @@ public class LoginServlet extends HttpServlet {
 		// ../login.jsp
 		String user = (String) request.getParameter(GlobalValues.USERNAME);
 		String pwd = (String) request.getParameter(GlobalValues.PASSWORD);
-		
+
 		// Setup user object
 		User currentUser = new User(-1, user, null);
 
@@ -74,16 +71,16 @@ public class LoginServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		// if password entered was blank, don't check anything; it was wrong
-		if (pwd.length() > 0)
-		{
+		if (pwd.length() > 0) {
 			// check first to see if it is the manager logging in
 			if (isManager(user, pwd)) {
 				HttpSession session = request.getSession();
 				sessionAndCookieSetup(user, request, response, session);
-				//Manager does not have a user id in data base, set to -2
+				// Manager does not have a user id in data base, set to -2
 				currentUser.setId(-2);
 				this.systemSetup(session);
-				this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser, session);
+				this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser,
+						session);
 				String encodedURL = response
 						.encodeRedirectURL("../pages/managerView.jsp");
 				response.sendRedirect(encodedURL);
@@ -91,72 +88,60 @@ public class LoginServlet extends HttpServlet {
 			// check for normal user login, whether username exists
 			else if (userExists(currentUser)) {
 				// check for normal user login, whether password matches
-				if (userPasswordMatches(currentUser,pwd)) {
+				if (userPasswordMatches(currentUser, pwd)) {
 					HttpSession session = request.getSession();
 					sessionAndCookieSetup(user, request, response, session);
 					this.systemSetup(session);
-					this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser, session);
+					this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN,
+							currentUser, session);
 					String encodedURL = response
 							.encodeRedirectURL("../pages/display.jsp");
 					response.sendRedirect(encodedURL);
-				}
-				else {
+				} else {
 					// password entered was wrong
 					out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
 				}
-			} 
+			}
 			// neither manage nor user information was correctly given
 			else {
 				out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
 			}
-		} 
+		}
 		// password entered was blank
 		else {
 			out.println("Invalid login information. <a href='../login.jsp'>Try again</a>.");
 		}
 	}
-		
+
 	// checks if user exists in database
-	private boolean userExists (User currentUser) {		
+	private boolean userExists(User currentUser) {
+
 		try {
-			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
-			st = con.createStatement();
-			UserDBOperations udbo = new UserDBOperations( currentUser, st);
+			UserDBOperations udbo = new UserDBOperations(currentUser, dbcp);
 			int tempInt = udbo.findUserID();
-			if (tempInt >= 0)
-			{
+			if (tempInt >= 0) {
 				currentUser.setId(tempInt);
 				return true;
-			}
-			else
-			{
+			} else {
 				return false;
-			}			
+			}
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return false;
-		} finally {
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
 	}
-	
+
 	// checks if entered info matches user password in database
-	private boolean userPasswordMatches (User currentUser, String password) {
+	private boolean userPasswordMatches(User currentUser, String password) {
 		try {
-			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
-			st = con.createStatement();
-			UserDBOperations udbo = new UserDBOperations( currentUser, st);
+			UserDBOperations udbo = new UserDBOperations(currentUser, dbcp);
 			return (udbo.findUserPW().compareTo(password) == 0 ? true : false);
-			
+
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
 			return false;
-		} finally {
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
 	}
 
@@ -172,20 +157,24 @@ public class LoginServlet extends HttpServlet {
 	/**
 	 * after checking users, set session and cookie
 	 * 
-	 * @param user - username
-	 * @param request - servlet request
-	 * @param response - servlet response 
-	 * @param session - current servlet session
+	 * @param user
+	 *            - username
+	 * @param request
+	 *            - servlet request
+	 * @param response
+	 *            - servlet response
+	 * @param session
+	 *            - current servlet session
 	 */
 	private void sessionAndCookieSetup(String user, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		session.setAttribute(GlobalValues.USERNAME, user);
-		session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME );
+		session.setMaxInactiveInterval(GlobalValues.SESSION_INACTIVE_TIME);
 		Cookie cookie = new Cookie(GlobalValues.USERNAME, user);
 		cookie.setMaxAge(GlobalValues.SESSION_INACTIVE_TIME);
 		response.addCookie(cookie);
 	}
-	
+
 	/**
 	 * setup the AWS system
 	 * 
@@ -213,34 +202,32 @@ public class LoginServlet extends HttpServlet {
 	 * @param session
 	 * 
 	 */
-	private void setCurrentUser(String privilege, User user, HttpSession session) {// Load image set of the current user
-		try {
-			con = ((DataSource)this.getServletContext().getAttribute(GlobalValues.Connection_Tag)).getConnection();
-			st = con.createStatement();
-			UserDBOperations udbo = new UserDBOperations( user, st);
+	private void setCurrentUser(String privilege, User user, HttpSession session) {// Load
+																					// image
+																					// set
+																					// of
+																					// the
+																					// current
+																					// user
+		UserDBOperations udbo = new UserDBOperations(user, dbcp);
 
-			// manager has userID -2, and does not have an image set
-			// do not try to retrieve image set if manager is logged in
-			if (user.getId() >= 0)
-			{
-				//set user's img set to the above
+		// manager has userID -2, and does not have an image set
+		// do not try to retrieve image set if manager is logged in
+		if (user.getId() >= 0) {
+			// set user's img set to the above
+			try {
 				user.setImgs(udbo.findAllImgs());
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-
-			// set user attributes for both Users and Admin
-			session.setAttribute(GlobalValues.USER_INIT, new Main(user));
-			session.setAttribute(GlobalValues.PRIVILEGE_TAG, privilege);
-
-			// test output -> give all keys of current img set
-			// System.out.println(user.getImgs().get(0).getKeys().get(1));
-			
-		} catch (SQLException e) {
-			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
-		} finally {
-	        if (con != null) try { con.close(); } catch (SQLException logOrIgnore) {}
-	        if (st != null) try { st.close(); } catch (SQLException logOrIgnore) {}
 		}
-	}
 
+		// set user attributes for both Users and Admin
+		session.setAttribute(GlobalValues.CURRENT_USER, user);
+		session.setAttribute(GlobalValues.PRIVILEGE_TAG, privilege);
+
+		// test output -> give all keys of current img set
+		// System.out.println(user.getImgs().get(0).getKeys().get(1));
+
+	}
 }

@@ -3,13 +3,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@page import="ece1779.commonObjects.User"%>
 <%@page import="ece1779.commonObjects.Images"%>
-<%@page import="ece1779.Main"%>
 <%@page import="ece1779.GlobalValues"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <title>Images Glance</title>
 
 <style type="text/css">
@@ -110,45 +111,26 @@ img {
 </head>
 <body>
 	<script type="text/javascript">
-		function manualGrow() {
-			document.display.action = "../ManualGrowServlet";
-			document.display.submit();
+		function checkAndSubmit() {
+			var v = document.getElementById("theFile").value;
+			if (v.length != 0) {
+				document.upload.action = getRootPath() + "FileUploadServlet";
+				document.upload.submit();
+			}
+
+		}
+		function getRootPath() {
+			var pathName = window.location.pathname.substring(1);
+			var webName = pathName == '' ? '' : pathName.substring(0, pathName
+					.indexOf('/'));
+			return window.location.protocol + '//' + window.location.host + '/'
+					+ webName + '/';
 		}
 	</script>
-
 	<%
-		//Main init = (Main) session.getAttribute(GlobalValues.USER_INIT);
-		//User user = init.getUser();
-
-		//test data
-		User user = new User(1, "ryan", new ArrayList<Images>());
-		List<String> keys = new ArrayList<String>();
-		keys.add("1001_0de77df0-1ae3-415d-919c-5c1ce17131b2");
-		keys.add("de8b9ea0-d770-4da3-afba-f13be11fbbad");
-		keys.add("2a59ed43-8c90-4dee-bd98-ed7f9fae2801");
-		keys.add("f4f99a54-4f89-4191-8ba9-c936dc359d2d");
-
-		List<String> key2 = new ArrayList<String>();
-		key2.add("560_350_cat.gif");
-		key2.add("560_350_cat.gif");
-		key2.add("560_350_cat.gif");
-		key2.add("560_350_cat.gif");
-		Images imgobj = new Images(user.getId(), 1, key2);
-		Images imgobj2 = new Images(user.getId(), 2, keys);
-		Images imgobj3 = new Images(user.getId(), 3, key2);
-		Images imgobj4 = new Images(user.getId(), 4, keys);
-		Images imgobj5 = new Images(user.getId(), 5, key2);
-		Images imgobj6 = new Images(user.getId(), 6, keys);
-		Images imgobj7 = new Images(user.getId(), 7, key2);
-		user.addImage(imgobj);
-		user.addImage(imgobj2);
-		user.addImage(imgobj3);
-		user.addImage(imgobj4);
-		user.addImage(imgobj5);
-		user.addImage(imgobj6);
-		user.addImage(imgobj7);
-		//test data
+		User user = (User) session.getAttribute(GlobalValues.CURRENT_USER);
 	%>
+
 	<form
 		action=<%=response.encodeURL(request.getContextPath()
 					+ "/servlets/LogoutServlet")%>
@@ -160,16 +142,24 @@ img {
 		</div>
 	</form>
 	<br>
-	<form
-		action=<%=response.encodeURL(request.getContextPath())
-					+ "/FileUploadServlet"%>
-		enctype="multipart/form-data" method="post">
+	<form action="" name=upload enctype="multipart/form-data" method="post">
 		<div align=center>
 			<div class=divDash>
 				<br> Upload a new image?<br> <br> <input type=hidden
 					name="userID">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
-					type="file" name="theFile" /> <br> <br> <input
-					class=submitButton type=submit> <br> <br>
+					type="file" name="theFile" id="theFile" /> <br> <br> <input
+					class=submitButton type=button onclick="checkAndSubmit()"
+					value=Submit> <br> <br>
+				<%
+					Boolean rsp = (Boolean) request
+							.getAttribute(GlobalValues.UPLOAD_RESPONSE);
+					if ((rsp != null) && (rsp == false)) {
+				%>
+				<font color=red>Upload Failed. Please try again later.</font> <br>
+				<br>
+				<%
+					}
+				%>
 			</div>
 		</div>
 	</form>
@@ -184,7 +174,8 @@ img {
 				for (int j = i; (j < i + 4) && (j < images.size()); j++) {
 						List<String> imagekeys = images.get(j).getKeys();
 						String key = imagekeys.get(0);
-						String href = "imageDetail.jsp?key1=" + key + "&key2="
+						String href = request.getContextPath()
+								+ "/pages/imageDetail.jsp?key1=" + key + "&key2="
 								+ imagekeys.get(1) + "&key3=" + imagekeys.get(2)
 								+ "&key4=" + imagekeys.get(3);
 			%>

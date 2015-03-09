@@ -43,6 +43,7 @@ public class UserS3Operations {
 		List<String> keys = new ArrayList<String>();
 		for (int i = 0; i < files.size(); i++) {
 			String key = user.getId() + "_" + UUID.randomUUID();
+			System.out.println("[UserS3Operations] Saving " + key + " to S3.");
 			this.save(files.get(i), key);
 			keys.add(key);
 		}

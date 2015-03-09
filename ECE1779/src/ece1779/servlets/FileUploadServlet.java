@@ -11,7 +11,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.dbcp.datasources.SharedPoolDataSource;
 import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.*;
 import org.apache.commons.fileupload.servlet.*;
@@ -58,9 +60,8 @@ public class FileUploadServlet extends HttpServlet {
 			BasicAWSCredentials awsCredentials = (BasicAWSCredentials) this
 					.getServletContext().getAttribute(
 							GlobalValues.AWS_CREDENTIALS);
-
-			User user = (User) request.getSession().getAttribute(
-					GlobalValues.USERNAME);
+			HttpSession session = request.getSession();
+			User user = (User) session.getAttribute(GlobalValues.CURRENT_USER);
 			// Create a factory for disk-based file items
 			FileItemFactory factory = new DiskFileItemFactory();
 
@@ -84,7 +85,7 @@ public class FileUploadServlet extends HttpServlet {
 			FileItem theFile = (FileItem) items.get(1);
 
 			// filename on the client
-			String fileName = theFile.getName();
+			// String fileName = theFile.getName();
 
 			// get root directory of web application
 			String path = this.getServletContext().getRealPath("/");
@@ -95,22 +96,15 @@ public class FileUploadServlet extends HttpServlet {
 			File fileToBeStored = new File(newFilePath);
 			theFile.write(fileToBeStored);
 
-			UserOperations uo = new UserOperations(user, awsCredentials);
+			SharedPoolDataSource dbcp = (SharedPoolDataSource) this
+					.getServletContext().getAttribute(
+							GlobalValues.Connection_Tag);
+			UserOperations uo = new UserOperations(user, awsCredentials, dbcp);
 			uo.uploadAndSave(fileToBeStored);
 
 			request.setAttribute(GlobalValues.UPLOAD_RESPONSE, true);
-			// /**
-			// * testdata
-			// */
-			// User user = new User(1001, "ryan", null);
-			// Images imgObj = new Images(1, 1, null);
-			//
-			// // save to s3
-			// UserS3Operations s3 = new UserS3Operations(awsCredentials, user);
-			// List<File> files = new ArrayList<File>();
-			// files.add(fileToBeStored);
-			// s3.save(files, imgObj);
-
+			session.setAttribute(GlobalValues.CURRENT_USER, user);
+			System.out.println("[FileUploadServlet] Upload done.");
 		} catch (Exception e) {
 			request.setAttribute(GlobalValues.UPLOAD_RESPONSE, false);
 			e.printStackTrace();
