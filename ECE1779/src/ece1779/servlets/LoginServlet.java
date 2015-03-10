@@ -75,21 +75,21 @@ public class LoginServlet extends HttpServlet {
 
 		// if password entered was blank, don't check anything; it was wrong
 		if (pwd.length() > 0) {
-			// check first to see if it is the manager logging in
-			if (isManager(user, pwd)) {
-				HttpSession session = request.getSession();
-				sessionAndCookieSetup(user, request, response, session);
-				// Manager does not have a user id in data base, set to -2
-				currentUser.setId(-2);
-				this.systemSetup(session);
-				this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser,
-						session);
-				String encodedURL = response
-						.encodeRedirectURL("../pages/managerView.jsp");
-				response.sendRedirect(encodedURL);
-			}
+			// // check first to see if it is the manager logging in
+			// if (isManager(user, pwd)) {
+			// HttpSession session = request.getSession();
+			// sessionAndCookieSetup(user, request, response, session);
+			// // Manager does not have a user id in data base, set to -2
+			// currentUser.setId(-2);
+			// this.systemSetup(session);
+			// this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser,
+			// session);
+			// String encodedURL = response
+			// .encodeRedirectURL("../pages/managerView.jsp");
+			// response.sendRedirect(encodedURL);
+			// }
 			// check for normal user login, whether username exists
-			else if (userExists(currentUser)) {
+			if (userExists(currentUser)) {
 				// check for normal user login, whether password matches
 				if (userPasswordMatches(currentUser, pwd)) {
 					HttpSession session = request.getSession();

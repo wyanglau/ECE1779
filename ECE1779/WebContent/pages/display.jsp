@@ -114,7 +114,8 @@ img {
 		function checkAndSubmit() {
 			var v = document.getElementById("theFile").value;
 			if (v.length != 0) {
-				document.upload.action = getRootPath() + "FileUploadServlet";
+				document.getElementById("uploadbtn").disabled = true;
+				document.upload.action = getRootPath() + "servlet/FileUpload";
 				document.upload.submit();
 			}
 
@@ -148,8 +149,8 @@ img {
 				<br> Upload a new image?<br> <br> <input type=hidden
 					name="userID">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
 					type="file" name="theFile" id="theFile" /> <br> <br> <input
-					class=submitButton type=button onclick="checkAndSubmit()"
-					value=Submit> <br> <br>
+					class=submitButton type=button id=uploadbtn
+					onclick="checkAndSubmit()" value=Submit> <br> <br>
 				<%
 					Boolean rsp = (Boolean) request
 							.getAttribute(GlobalValues.UPLOAD_RESPONSE);

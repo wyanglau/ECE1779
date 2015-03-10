@@ -2,7 +2,6 @@ package ece1779.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,9 +49,6 @@ public class DeleteServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		BasicAWSCredentials credentials = (BasicAWSCredentials) this
 				.getServletContext().getAttribute(GlobalValues.AWS_CREDENTIALS);
-
-		Connection con = null;
-		Statement st = null;
 		try {
 
 			MngrS3Operations s3 = new MngrS3Operations(credentials);
@@ -70,18 +66,7 @@ public class DeleteServlet extends HttpServlet {
 
 			out.write(GlobalValues.ERROR);
 			e.printStackTrace();
-		} finally {
-			if (con != null)
-				try {
-					con.close();
-				} catch (SQLException logOrIgnore) {
-				}
-			if (st != null)
-				try {
-					st.close();
-				} catch (SQLException logOrIgnore) {
-				}
-		}
+		} 
 
 	}
 

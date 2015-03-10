@@ -203,6 +203,7 @@ public class UserDBOperations {
 		ResultSet rs = null;
 		Connection con = this.dbcp.getConnection();
 		Statement statement = con.createStatement();
+
 		try {
 			// Enter data into database
 			statement.executeUpdate("insert into "

@@ -48,9 +48,6 @@ public class InitializationServlet extends HttpServlet {
 
 			DriverAdapterCPDS ds = new DriverAdapterCPDS();
 			ds.setDriver(config.getInitParameter("dbDriver"));
-			// ds.setUrl("jdbc:mysql://" + GlobalValues.dbLocation_URL + ":"
-			// + GlobalValues.dbLocation_Port + "/"
-			// + GlobalValues.dbLocation_Schema);
 			ds.setUrl(config.getInitParameter("dbURL"));
 
 			ds.setUser(config.getInitParameter("dbUser"));
@@ -59,8 +56,8 @@ public class InitializationServlet extends HttpServlet {
 			SharedPoolDataSource dbcp = new SharedPoolDataSource();
 			dbcp.setConnectionPoolDataSource(ds);
 
-			this.getServletContext().setAttribute(
-					GlobalValues.Connection_Tag, dbcp);
+			this.getServletContext().setAttribute(GlobalValues.Connection_Tag,
+					dbcp);
 		} catch (Exception ex) {
 			getServletContext().log("SQLGatewayPool Error: " + ex.getMessage());
 			ex.printStackTrace();
