@@ -33,6 +33,10 @@ public class MngrDBOperations {
 					.executeUpdate("DELETE FROM " + GlobalValues.dbTable_Users);
 			statement.executeUpdate("DELETE FROM "
 					+ GlobalValues.dbTable_Images);
+			
+			// reset the auto increment for both tables
+			statement.executeUpdate("ALTER TABLE " + GlobalValues.dbTable_Users + " AUTO_INCREMENT = 1");
+			statement.executeUpdate("ALTER TABLE " + GlobalValues.dbTable_Images + " AUTO_INCREMENT = 1");
 
 		} finally {
 			try {
