@@ -61,7 +61,7 @@ public class GlobalValues {
 	 */
 	public static String SECURITY_GROUP_ID = "sg-36c76d52";
 
-	public static String AMI_ID = "ami-06efba6e";
+	public static String AMI_ID = "ami-e693b78e";
 
 	/**
 	 * loadbalancer name
