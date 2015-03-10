@@ -29,10 +29,8 @@ public class MngrDBOperations {
 
 			// delete everything from both the users and images table in the
 			// database
-			statement
-					.executeUpdate("DELETE FROM " + GlobalValues.dbTable_Users);
-			statement.executeUpdate("DELETE FROM "
-					+ GlobalValues.dbTable_Images);
+			statement.executeUpdate("DELETE FROM " + GlobalValues.dbTable_Users);
+			statement.executeUpdate("DELETE FROM " + GlobalValues.dbTable_Images);
 			
 			// reset the auto increment for both tables
 			statement.executeUpdate("ALTER TABLE " + GlobalValues.dbTable_Users + " AUTO_INCREMENT = 1");
