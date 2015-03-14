@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
-  <display-name>ece1779</display-name>
+  <display-name>ece1779user</display-name>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>login.jsp</welcome-file>
@@ -10,11 +10,11 @@
     <servlet-class>ece1779.servlets.InitializationServlet</servlet-class>
     <init-param>
       <param-name>AWSaccessKey</param-name>
-      <param-value>AKIAITX5Q7WRIAUMUKNA</param-value>
+      <param-value></param-value>
     </init-param>
     <init-param>
       <param-name>AWSsecretKey</param-name>
-      <param-value>tOoLN5t+wAj2X5KVi9PbK1xdeT7X8Giz8X2k0xLF</param-value>
+      <param-value></param-value>
     </init-param>
     <init-param>
       <param-name>dbDriver</param-name>
@@ -122,6 +122,14 @@
     <display-name>FileUploadServlet</display-name>
     <servlet-name>FileUploadServlet</servlet-name>
     <servlet-class>ece1779.servlets.FileUploadServlet</servlet-class>
+    <init-param>
+      <param-name>AWSaccessKey</param-name>
+      <param-value></param-value>
+    </init-param>
+    <init-param>
+      <param-name>AWSsecretKey</param-name>
+      <param-value></param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>FileUploadServlet</servlet-name>

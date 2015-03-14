@@ -15,7 +15,7 @@ public class ImageProcessing {
 	/**
 	 * local : "/opt/local/bin"; linux : /usr/bin
 	 */
-	private final static String imPath = "/opt/local/bin";
+	private final static String imPath = "/usr/bin";
 	static {
 		ProcessStarter.setGlobalSearchPath(imPath);
 	}

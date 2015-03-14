@@ -3,7 +3,6 @@ package ece1779.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,20 +12,14 @@ import javax.servlet.http.Cookie;
 
 import org.apache.commons.dbcp.datasources.SharedPoolDataSource;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-
 import ece1779.GlobalValues;
 import ece1779.commonObjects.User;
-import ece1779.loadBalance.CloudWatching;
 import ece1779.DAO.*;
 
 import java.sql.*;
 
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	private String managerName;
-	private String managerPassword;
 	private SharedPoolDataSource dbcp;
 
 	/**
@@ -37,9 +30,6 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	public void init() {
-		managerName = this.getServletConfig().getInitParameter("Manager");
-		managerPassword = this.getServletConfig().getInitParameter(
-				"ManagerPassword");
 		dbcp = (SharedPoolDataSource) this.getServletContext().getAttribute(
 				GlobalValues.Connection_Tag);
 	}
@@ -75,26 +65,11 @@ public class LoginServlet extends HttpServlet {
 
 		// if password entered was blank, don't check anything; it was wrong
 		if (pwd.length() > 0) {
-			// // check first to see if it is the manager logging in
-			// if (isManager(user, pwd)) {
-			// HttpSession session = request.getSession();
-			// sessionAndCookieSetup(user, request, response, session);
-			// // Manager does not have a user id in data base, set to -2
-			// currentUser.setId(-2);
-			// this.systemSetup(session);
-			// this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN, currentUser,
-			// session);
-			// String encodedURL = response
-			// .encodeRedirectURL("../pages/managerView.jsp");
-			// response.sendRedirect(encodedURL);
-			// }
-			// check for normal user login, whether username exists
 			if (userExists(currentUser)) {
 				// check for normal user login, whether password matches
 				if (userPasswordMatches(currentUser, pwd)) {
 					HttpSession session = request.getSession();
 					sessionAndCookieSetup(user, request, response, session);
-					this.systemSetup(session);
 					this.setCurrentUser(GlobalValues.PRIVILEGE_ADMIN,
 							currentUser, session);
 					String encodedURL = response
@@ -149,15 +124,6 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
-	// checks if login information corresponds to manager
-	private boolean isManager(String username, String password) {
-		if (username.equals(managerName) && password.equals(managerPassword)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	/**
 	 * after checking users, set session and cookie
 	 * 
@@ -177,23 +143,6 @@ public class LoginServlet extends HttpServlet {
 		Cookie cookie = new Cookie(GlobalValues.USERNAME, user);
 		cookie.setMaxAge(GlobalValues.SESSION_INACTIVE_TIME);
 		response.addCookie(cookie);
-	}
-
-	/**
-	 * setup the AWS system
-	 * 
-	 * @param privilege
-	 * @param userName
-	 * @param userID
-	 * @param session
-	 */
-	private void systemSetup(HttpSession session) {
-		// set up cloudwatching
-		ServletContext context = this.getServletContext();
-		BasicAWSCredentials credentials = (BasicAWSCredentials) context
-				.getAttribute(GlobalValues.AWS_CREDENTIALS);
-		CloudWatching cw = new CloudWatching(credentials);
-		session.setAttribute(GlobalValues.CLOUD_WATCHING, cw);
 	}
 
 	/**

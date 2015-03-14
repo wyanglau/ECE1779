@@ -71,15 +71,17 @@ public class UserS3Operations {
 
 	public static void main(String[] args) {
 
-		String accessKey = "";
-		String secretKey = "/h6Io";
-		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey,
-				secretKey);
-		UserS3Operations s3 = new UserS3Operations(awsCredentials, new User(1,
-				null, null));
-
-		Images image = new Images(0, 1, null);
-		List<File> files = new ArrayList<File>();
+		// String accessKey = "";
+		// String secretKey = "/h6Io";
+		// BasicAWSCredentials awsCredentials = new
+		// BasicAWSCredentials(accessKey,
+		// secretKey);
+		// UserS3Operations s3 = new UserS3Operations(awsCredentials, new
+		// User(1,
+		// null, null));
+		//
+		// Images image = new Images(0, 1, null);
+		// List<File> files = new ArrayList<File>();
 		// save
 		// for (int i = 0; i < 4; i++) {
 		// File file = new File("Sources/doraemon.jpg");
